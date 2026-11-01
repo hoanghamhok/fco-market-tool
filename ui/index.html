@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self';"
+    />
+    <title>FCO Market</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <svg class="symbols" aria-hidden="true">
+      <defs>
+        <symbol id="i-pitch" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 12h18M8 3v4h8V3M8 21v-4h8v4" />
+          <circle cx="12" cy="12" r="3" />
+        </symbol>
+        <symbol id="i-tax" viewBox="0 0 24 24">
+          <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z M9 7h6M9 11h6M9 15h2" />
+        </symbol>
+        <symbol id="i-watch" viewBox="0 0 24 24">
+          <path d="M3 17 8 12l4 3 8-10M14 5h6v6M3 21h18" />
+        </symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6" /></symbol>
+        <symbol id="i-scan" viewBox="0 0 24 24">
+          <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M7 12h10" />
+        </symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></symbol>
+        <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" /></symbol>
+        <symbol id="i-stop" viewBox="0 0 24 24">
+          <rect x="5" y="5" width="14" height="14" rx="2" />
+        </symbol>
+      </defs>
+    </svg>
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">F<span>CO</span></span>
+        <div>MARKET<span class="brand-caption">BỘ CÔNG CỤ FC ONLINE</span></div>
+      </div>
+      <div class="nav-label">KHÔNG GIAN CỦA BẠN</div>
+      <nav aria-label="Điều hướng chính">
+        <button class="nav-item active" data-page="salary">
+          <svg><use href="#i-pitch" /></svg><span>Đội hình</span><span class="nav-index">01</span>
+        </button>
+        <button class="nav-item" data-page="tax">
+          <svg><use href="#i-tax" /></svg><span>Tính thuế</span><span class="nav-index">02</span>
+        </button>
+        <button class="nav-item" data-page="watch">
+          <svg><use href="#i-watch" /></svg><span>Canh giá</span><span class="nav-index">03</span>
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="local-status"><span class="dot"></span> Dữ liệu trên máy</div>
+        <div class="version">FCO Market <span id="version">4.0</span></div>
+      </div>
+    </aside>
+    <main>
+      <header class="page-header">
+        <div>
+          <div class="eyebrow" id="eyebrow">QUẢN LÝ ĐỘI HÌNH</div>
+          <h1 id="page-title">Đội hình</h1>
+          <p id="page-description">Cân đối lương cho 11 vị trí trên sân.</p>
+        </div>
+        <span class="save-state" id="save-state" role="status"
+          ><svg><use href="#i-check" /></svg><span>Đã sẵn sàng</span></span
+        >
+      </header>
+      <div id="global-error" class="notice error" role="alert" hidden></div>
+      <section id="page-salary" class="page">
+        <div class="salary-toolbar">
+          <div class="segmented" aria-label="Chọn sơ đồ">
+            <button data-formation="4-3-3" class="selected">4–3–3 <small>2 CDM</small></button
+            ><button data-formation="4-1-4-1">4–1–4–1</button>
+          </div>
+          <span class="muted small">Hai sơ đồ · lưu riêng</span>
+        </div>
+        <div class="squad-layout">
+          <div class="pitch-wrap">
+            <div class="pitch-caption">
+              <span>ĐỘI HÌNH XUẤT PHÁT</span><span id="pitch-formation">4–3–3</span>
+            </div>
+            <div class="pitch" id="pitch" aria-label="Nhập lương cho từng vị trí">
+              <svg
+                class="field"
+                viewBox="0 0 600 600"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <defs>
+                  <pattern id="grass" width="600" height="120" patternUnits="userSpaceOnUse">
+                    <rect width="600" height="60" fill="#ffffff" opacity=".025" />
+                  </pattern>
+                </defs>
+                <rect width="600" height="600" fill="url(#grass)" />
+                <g fill="none" stroke="currentColor" stroke-width="1.1">
+                  <rect x="22" y="22" width="556" height="556" rx="2" />
+                  <path
+                    d="M22 300h556M172 22v92h256V22M240 22v38h120V22M172 578v-92h256v92M240 578v-38h120v38"
+                  />
+                  <ellipse cx="300" cy="300" rx="71" ry="61" />
+                  <path
+                    d="M252 114a54 42 0 0 0 96 0M252 486a54 42 0 0 1 96 0M22 41a19 19 0 0 0 19-19M559 22a19 19 0 0 0 19 19M22 559a19 19 0 0 1 19 19M559 578a19 19 0 0 1 19-19"
+                  />
+                </g>
+                <g fill="currentColor">
+                  <circle cx="300" cy="300" r="2.5" />
+                  <circle cx="300" cy="84" r="2" />
+                  <circle cx="300" cy="516" r="2" />
+                </g>
+              </svg>
+              <div id="players"></div>
+            </div>
+            <div class="pitch-footer">
+              <span><span class="tiny-dot"></span> Bấm vào vị trí để nhập lương</span
+              ><span>Ô trống = 0</span>
+            </div>
+          </div>
+          <aside class="squad-summary">
+            <div class="total-block">
+              <div class="eyebrow">TỔNG LƯƠNG</div>
+              <div class="salary-number" id="salary-total" aria-live="polite">0</div>
+              <div class="total-sub"><span id="salary-count">0 / 11</span> vị trí đã nhập</div>
+              <div class="completion-track"><span id="salary-progress"></span></div>
+            </div>
+            <div class="breakdown">
+              <div class="section-label">PHÂN BỔ THEO TUYẾN</div>
+              <div id="salary-breakdown"></div>
+            </div>
+            <div class="summary-bottom">
+              <p>Lương được lưu riêng cho từng sơ đồ, kể cả khi bạn đóng ứng dụng.</p>
+              <button class="text-button" id="clear-salary">
+                <svg><use href="#i-reset" /></svg>Xóa lương sơ đồ</button
+              ><button class="text-button accent" id="undo-salary" hidden>Hoàn tác vừa xóa</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+      <section id="page-tax" class="page" hidden>
+        <div class="tax-layout">
+          <div class="tax-inputs panel">
+            <div class="section-heading">
+              <span class="step-number">01</span>
+              <h2>Giá chuyển nhượng</h2>
+            </div>
+            <label class="field-label" for="tax-price">Giá bán cầu thủ</label>
+            <div class="input-unit large-input">
+              <input
+                id="tax-price"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Nhập giá bán"
+              /><span>BP</span>
+            </div>
+            <div class="section-heading section-gap">
+              <span class="step-number">02</span>
+              <h2>Quyền lợi giảm thuế</h2>
+            </div>
+            <div class="field-label">Gói thành viên</div>
+            <div class="member-options">
+              <button data-member="none" class="selected">
+                <strong>Thường</strong><small>Không giảm</small></button
+              ><button data-member="vip"><strong>VIP</strong><small>Giảm 10%</small></button
+              ><button data-member="svip"><strong>SVIP</strong><small>Giảm 30%</small></button>
+            </div>
+            <div class="field-label coupon-label">Coupon giảm thuế</div>
+            <div class="coupon-options" id="coupons"></div>
+            <label class="switch-row"
+              ><span
+                ><strong>Phòng máy PC / Gcafe</strong><small>Giảm thêm 30% tiền thuế</small></span
+              ><input id="tax-pc" type="checkbox" role="switch" /><span
+                class="switch"
+                aria-hidden="true"
+              ></span
+            ></label>
+          </div>
+          <aside class="tax-receipt">
+            <div class="receipt-top">
+              <span class="eyebrow">SAU CHUYỂN NHƯỢNG</span><svg><use href="#i-tax" /></svg>
+            </div>
+            <div class="receipt-label">Bạn nhận được</div>
+            <div class="net-value" id="tax-net" aria-live="polite">0</div>
+            <div class="bp-unit">BP</div>
+            <div class="receipt-divider"></div>
+            <dl>
+              <div>
+                <dt>Giá bán</dt>
+                <dd id="tax-gross">0</dd>
+              </div>
+              <div>
+                <dt>Thuế phải trả <span id="tax-rate">40%</span></dt>
+                <dd id="tax-fee">0</dd>
+              </div>
+              <div class="saving-row">
+                <dt>Đã tiết kiệm</dt>
+                <dd id="tax-saved">0</dd>
+              </div>
+            </dl>
+            <div class="receipt-foot">
+              <span class="dot"></span><span id="tax-discount">Chưa áp dụng giảm thuế</span>
+            </div>
+          </aside>
+        </div>
+        <p class="fine-print">
+          Thuế gốc 40%. Ước tính chưa áp dụng giới hạn BP hoặc điều kiện riêng của từng coupon.
+        </p>
+      </section>
+      <section id="page-watch" class="page" hidden>
+        <div class="watch-status" role="status">
+          <span class="dot" id="watch-dot"></span
+          ><span id="watch-status">Sẵn sàng nhận diện cầu thủ.</span
+          ><span class="keycap">F8 Dừng</span>
+        </div>
+        <div id="watch-warning" class="notice" role="alert" hidden></div>
+        <div id="pending-order" class="notice pending" hidden>
+          <span>Lệnh trước chưa rõ kết quả. Kiểm tra DS của bạn trong game.</span
+          ><button class="button" id="acknowledge">Đã kiểm tra lệnh trước</button>
+        </div>
+        <div class="watch-layout">
+          <div class="panel player-panel">
+            <div class="section-heading">
+              <span class="step-number">01</span>
+              <h2>Cầu thủ theo dõi</h2>
+              <span id="trade-side" class="badge">CHƯA CHỌN</span>
+            </div>
+            <div id="player-empty" class="empty-player">
+              <div class="scan-illustration">
+                <svg><use href="#i-scan" /></svg>
+              </div>
+              <h3>Chọn cầu thủ trong game</h3>
+              <p>Mở hộp Mua thường hoặc Bán từng cá nhân, số lượng 1.</p>
+            </div>
+            <div id="player-detail" hidden>
+              <div class="player-identity">
+                <img id="player-portrait" alt="Thẻ cầu thủ đã nhận diện" />
+                <div>
+                  <span class="eyebrow">ĐÃ NHẬN DIỆN</span>
+                  <h3 id="player-name"></h3>
+                  <span class="badge" id="player-boost"></span>
+                  <p class="muted small" id="player-quantity"></p>
+                </div>
+              </div>
+              <div class="price-range">
+                <div><span>MIN</span><strong id="player-min">—</strong><small>BP</small></div>
+                <div><span>MAX</span><strong id="player-max">—</strong><small>BP</small></div>
+              </div>
+            </div>
+            <button class="button scan-button" id="detect">
+              <svg><use href="#i-scan" /></svg>Nhận diện cầu thủ
+              <span class="button-hint">4 giây</span></button
+            ><button class="text-button" id="test-price" disabled>
+              Thử chọn MAX / MIN <svg><use href="#i-arrow" /></svg>
+            </button>
+          </div>
+          <div class="panel conditions">
+            <div class="section-heading">
+              <span class="step-number">02</span>
+              <h2>Điều kiện canh giá</h2>
+            </div>
+            <label class="field-label" id="limit-label" for="watch-limit">Ngưỡng giá</label>
+            <div class="input-unit">
+              <input id="watch-limit" inputmode="numeric" placeholder="Nhập số BP đầy đủ" /><span
+                >BP</span
+              >
+            </div>
+            <button class="text-button small" id="use-price" disabled>
+              Dùng giá MIN / MAX đã nhận diện
+            </button>
+            <div class="time-fields">
+              <div>
+                <label class="field-label" for="watch-start">Bắt đầu · giờ Việt Nam</label
+                ><input id="watch-start" placeholder="Ngay bây giờ" autocomplete="off" /><span
+                  class="input-help"
+                  >HH:MM hoặc HH:MM:SS</span
+                >
+              </div>
+              <div>
+                <label class="field-label" for="watch-duration">Thời gian canh</label>
+                <div class="input-unit">
+                  <input id="watch-duration" inputmode="numeric" value="120" /><span>giây</span>
+                </div>
+                <span class="input-help">Từ 5 đến 1.800 giây</span>
+              </div>
+            </div>
+            <label class="switch-row compact"
+              ><span
+                ><strong>Làm mới bảng giá</strong
+                ><small>Esc → mở lại bảng để lấy giá mới</small></span
+              ><input id="watch-refresh" type="checkbox" role="switch" checked /><span
+                class="switch"
+                aria-hidden="true"
+              ></span
+            ></label>
+            <label class="switch-row compact"
+              ><span
+                ><strong>Chạy thử</strong
+                ><small id="dry-description">Làm mới bảng, không gửi lệnh</small></span
+              ><input id="watch-dry" type="checkbox" role="switch" checked /><span
+                class="switch"
+                aria-hidden="true"
+              ></span
+            ></label>
+            <div class="watch-actions">
+              <button class="button primary" id="start-watch" disabled>
+                Bắt đầu canh giá<svg><use href="#i-arrow" /></svg></button
+              ><button class="button stop" id="stop-watch" disabled>
+                <svg><use href="#i-stop" /></svg>Dừng
+              </button>
+            </div>
+            <p class="input-help">Mỗi phiên tối đa 1 lệnh. Chuyển khỏi game sẽ dừng thao tác.</p>
+          </div>
+        </div>
+        <div class="activity">
+          <div class="activity-heading">
+            <span class="section-label">NHẬT KÝ PHIÊN</span
+            ><button class="text-button small" id="diagnose">Chẩn đoán tab · F9</button>
+          </div>
+          <div id="logs" class="logs">
+            <span class="muted">Các bước nhận diện và canh giá sẽ xuất hiện tại đây.</span>
+          </div>
+        </div>
+      </section>
+      <div id="loading" class="loading">
+        <span class="loading-mark">FCO</span>
+        <p>Đang mở không gian của bạn…</p>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

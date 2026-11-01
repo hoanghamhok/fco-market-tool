@@ -1,0 +1,29 @@
+FCO MARKET 4.0.0 — ĐỌC TRƯỚC KHI DÙNG
+
+1. Giải nén toàn bộ ZIP bằng Extract All / Giải nén tất cả.
+2. Mở HUONG-DAN.html bằng trình duyệt để đọc hướng dẫn đầy đủ.
+3. Chạy FCO-Market-4.0.0.exe trên máy Windows 64-bit (x64).
+
+Không cần cài Python hoặc tải mã nguồn.
+Không chạy EXE ngay bên trong ZIP. Đặt ứng dụng ở thư mục có quyền ghi,
+ví dụ Documents hoặc Desktop.
+
+Nếu máy thiếu Microsoft Edge WebView2 Runtime:
+https://developer.microsoft.com/en-us/microsoft-edge/webview2/
+Có Internet: dùng Evergreen Bootstrapper.
+Cài ngoại tuyến: dùng Evergreen Standalone Installer, chọn x64.
+Cài xong rồi mở lại FCO Market.
+
+BA CHỨC NĂNG
+- Đội hình: chọn sơ đồ, nhập lương từng vị trí, xem tổng tự cập nhật.
+- Tính thuế: nhập số BP đầy đủ, chọn thành viên, coupon và PC/Gcafe.
+- Canh giá: mở hộp cầu thủ trong game, nhận diện, đặt ngưỡng và giờ chạy.
+  Lần đầu giữ Chạy thử bật. F8 để dừng. Xem hướng dẫn trước khi cho gửi lệnh thật.
+
+DỮ LIỆU
+Ứng dụng tự tạo FCO-Market-3-data cạnh EXE để lưu cài đặt và dữ liệu.
+Khi cập nhật, giữ nguyên thư mục này. Khi gửi ứng dụng cho người khác bắt đầu dùng,
+chỉ cần gửi gói ZIP phát hành, không cần gửi dữ liệu hoặc nhật ký cá nhân.
+
+Trong gói có EXE, hướng dẫn HTML, giấy phép thư viện và SHA256SUMS.txt.
+WebView2 Runtime được cài riêng nếu máy nhận chưa có.

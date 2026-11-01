@@ -1,0 +1,14 @@
+.venv/
+node_modules/
+__pycache__/
+*.py[cod]
+.build-staging/
+.pyinstaller-cache/
+build/
+release/
+reports/
+data-v3/
+FCO-Market-3-data/
+qa-ui-data/
+*.exe
+*.zip

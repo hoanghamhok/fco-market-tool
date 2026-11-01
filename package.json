@@ -1,0 +1,11 @@
+{
+  "name": "fco-market-desktop-ui",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write ui docs/HUONG-DAN.html",
+    "format:check": "prettier --check ui docs/HUONG-DAN.html"
+  },
+  "devDependencies": {
+    "prettier": "3.9.10"
+  }
+}

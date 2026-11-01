@@ -1,0 +1,6 @@
+Pillow==12.3.0
+pywebview==6.2.1
+PyAutoGUI==0.9.54
+numpy==2.5.4
+opencv-python-headless==5.0.0.93
+tesserocr @ https://github.com/simonflueckiger/tesserocr-windows_build/releases/download/tesserocr-v2.11.0-tesseract-5.5.3/tesserocr-2.11.0-cp313-cp313-win_amd64.whl

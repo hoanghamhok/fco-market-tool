@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hướng dẫn sử dụng · FCO Market 4.0.0</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: #f3f5ef;
+        color: #263020;
+        font:
+          16px/1.75 'Segoe UI',
+          Arial,
+          sans-serif;
+      }
+      main {
+        max-width: 920px;
+        margin: 35px auto;
+        background: #fff;
+        padding: 48px 58px;
+        border: 1px solid #dce3d4;
+        border-radius: 12px;
+      }
+      header {
+        border-bottom: 3px solid #a8cc6d;
+        padding-bottom: 25px;
+        margin-bottom: 28px;
+      }
+      .eyebrow {
+        font-size: 12px;
+        color: #61784b;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+      h1 {
+        font-size: 36px;
+        line-height: 1.25;
+        letter-spacing: -1px;
+        margin: 10px 0;
+      }
+      h2 {
+        font-size: 23px;
+        margin: 38px 0 14px;
+        line-height: 1.4;
+      }
+      h3 {
+        font-size: 17px;
+        margin: 24px 0 8px;
+      }
+      p {
+        margin: 10px 0;
+      }
+      a {
+        color: #436b24;
+        text-underline-offset: 3px;
+      }
+      nav {
+        padding: 20px 24px;
+        background: #f2f6eb;
+        border-radius: 8px;
+      }
+      nav a {
+        display: inline-block;
+        margin: 3px 18px 3px 0;
+      }
+      ol,
+      ul {
+        padding-left: 24px;
+      }
+      li {
+        padding-left: 4px;
+        margin: 7px 0;
+      }
+      code {
+        font:
+          13px/1.6 Consolas,
+          monospace;
+        background: #f0f2ec;
+        padding: 3px 5px;
+        border-radius: 3px;
+        overflow-wrap: anywhere;
+      }
+      .callout {
+        padding: 15px 20px;
+        border-left: 4px solid #a8cc6d;
+        background: #f4f7ef;
+        margin: 20px 0;
+      }
+      .note {
+        font-size: 14px;
+        color: #66715c;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+        margin: 18px 0;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid #dce3d4;
+        padding: 12px 10px;
+      }
+      th {
+        background: #f3f6ed;
+      }
+      footer {
+        border-top: 1px solid #dce3d4;
+        margin-top: 35px;
+        padding-top: 18px;
+        color: #66715c;
+        font-size: 12px;
+      }
+      @media (max-width: 650px) {
+        main {
+          margin: 0;
+          padding: 24px 20px;
+          border: 0;
+          border-radius: 0;
+        }
+        h1 {
+          font-size: 29px;
+        }
+        table {
+          font-size: 12px;
+        }
+        th,
+        td {
+          padding: 8px 5px;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+          font-size: 11pt;
+        }
+        main {
+          border: 0;
+          margin: 0;
+          max-width: none;
+          padding: 0;
+        }
+        nav {
+          display: none;
+        }
+        h2,
+        h3 {
+          break-after: avoid;
+        }
+        table,
+        .callout {
+          break-inside: avoid;
+        }
+        a {
+          color: inherit;
+        }
+        h1 {
+          font-size: 27pt;
+        }
+        h2 {
+          font-size: 18pt;
+        }
+        footer {
+          font-size: 9pt;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="eyebrow">FCO MARKET / 4.0.0</div>
+        <h1>Hướng dẫn sử dụng</h1>
+        <p>Đội hình, thuế chuyển nhượng và canh giá FC Online trong một ứng dụng Windows.</p>
+        <p class="note">Bản Windows 64-bit (x64) · Python và OCR đã có trong EXE.</p>
+      </header>
+      <nav aria-label="Mục lục">
+        <strong>Đọc nhanh</strong><br /><a href="#bat-dau">1. Mở ứng dụng</a
+        ><a href="#doi-hinh">2. Tính lương</a><a href="#thue">3. Tính thuế</a
+        ><a href="#canh-gia">4. Canh giá</a><a href="#du-lieu">5. Dữ liệu &amp; cập nhật</a
+        ><a href="#loi">6. Xử lý sự cố</a>
+      </nav>
+
+      <section id="bat-dau">
+        <h2>1. Mở ứng dụng lần đầu</h2>
+        <ol>
+          <li>Tải toàn bộ file ZIP về máy tính Windows x64.</li>
+          <li>
+            Nhấn chuột phải vào ZIP → <strong>Extract All… / Giải nén tất cả</strong>. Đặt thư mục ở
+            nơi có quyền ghi, chẳng hạn Documents hoặc Desktop.
+          </li>
+          <li>
+            Mở thư mục vừa giải nén và chạy <strong>FCO-Market-4.0.0.exe</strong>. Hãy chờ ứng dụng
+            mở xong; lần đầu có thể lâu hơn do EXE giải nén tài nguyên.
+          </li>
+          <li>
+            Nếu máy thiếu <strong>Microsoft Edge WebView2 Runtime</strong>, tải bộ cài từ
+            <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/"
+              >trang WebView2 chính thức của Microsoft</a
+            >. Có Internet: dùng Evergreen Bootstrapper; cần cài ngoại tuyến: chọn Evergreen
+            Standalone Installer → x64. Cài xong rồi mở lại FCO Market.
+          </li>
+        </ol>
+        <div class="callout">
+          <strong>Không chạy EXE ngay bên trong ZIP.</strong> Giải nén trước để dữ liệu được lưu ổn
+          định. Người nhận không cần cài Python, tải mã nguồn hay chạy setup.bat.
+        </div>
+        <p>
+          WebView2 là thành phần hiển thị giao diện của ứng dụng; việc máy có trình duyệt Edge không
+          thay thế yêu cầu về WebView2 Runtime.
+          <a href="https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution"
+            >Tài liệu của Microsoft</a
+          >.
+        </p>
+        <p>
+          Đội hình và Tính thuế dùng được khi chưa mở game. Canh giá yêu cầu FC Online đang chạy.
+        </p>
+      </section>
+
+      <section id="doi-hinh">
+        <h2>2. Tính lương đội hình</h2>
+        <ol>
+          <li>Chọn <strong>Đội hình</strong> ở thanh bên trái.</li>
+          <li>Chọn <strong>4–3–3 · 2 CDM</strong> hoặc <strong>4–1–4–1</strong>.</li>
+          <li>
+            Bấm vào ô dưới tên vị trí trên sân rồi nhập lương cầu thủ. Dùng số nguyên không âm, ví
+            dụ <strong>25</strong>.
+          </li>
+          <li>
+            Xem <strong>Tổng lương</strong> bên phải. Ô trống tính là 0. Ví dụ nhập 25 ở cả 11 vị
+            trí thì tổng là <strong>275</strong>.
+          </li>
+        </ol>
+        <p>
+          Ứng dụng lưu riêng từng sơ đồ, tự cộng lương và hiển thị phân bổ theo tuyến. Đổi sơ đồ
+          hoặc đóng rồi mở lại vẫn giữ dữ liệu đã lưu.
+        </p>
+        <p>
+          <strong>Xóa lương sơ đồ</strong> chỉ xóa sơ đồ đang chọn. Bấm
+          <strong>Hoàn tác vừa xóa</strong> để khôi phục ngay; nút này hết hiệu lực sau khi nhập
+          tiếp, đổi sơ đồ hoặc đóng ứng dụng.
+        </p>
+      </section>
+
+      <section id="thue">
+        <h2>3. Tính thuế chuyển nhượng</h2>
+        <ol>
+          <li>Chọn <strong>Tính thuế</strong>.</li>
+          <li>
+            Nhập giá bán bằng số BP đầy đủ: <code>7600000000000</code> hoặc
+            <code>7.600.000.000.000</code>. Không nhập dạng 7.6T, 800M hoặc 10B.
+          </li>
+          <li>
+            Chọn gói thành viên <strong>Thường / VIP / SVIP</strong>, coupon và quyền lợi
+            <strong>Phòng máy PC / Gcafe</strong> nếu có.
+          </li>
+          <li>Đọc số BP thực nhận, thuế phải trả và số đã tiết kiệm ở bảng bên phải.</li>
+        </ol>
+        <div class="callout">
+          <strong>Ví dụ:</strong> giá bán 7.600.000.000.000 BP, SVIP, coupon 30%, không bật PC →
+          nhận <strong>6.384.000.000.000 BP</strong>.
+        </div>
+        <p class="note">
+          Thuế gốc 40%. Đây là phép tính cơ bản; chưa xét giới hạn BP hoặc điều kiện riêng của
+          coupon. Hãy đối chiếu điều kiện coupon trong game.
+        </p>
+      </section>
+
+      <section id="canh-gia">
+        <h2>4. Canh giá trong FC Online</h2>
+        <h3>Chuẩn bị và nhận diện</h3>
+        <ol>
+          <li>
+            Mở đúng <strong>một cửa sổ FC ONLINE</strong>. Nếu game chạy bằng quyền quản trị, mở FCO
+            Market bằng chuột phải → <strong>Run as administrator</strong> để cùng mức quyền.
+          </li>
+          <li>
+            Trong game, mở hộp <strong>Mua thường</strong> hoặc
+            <strong>Bán từng cá nhân</strong> của đúng cầu thủ, số lượng <strong>1</strong>. Với
+            lệnh đang treo, mở từ <strong>Đăng ký lại</strong> trong <strong>DS của bạn</strong>.
+          </li>
+          <li>
+            Trong ứng dụng, chọn <strong>Canh giá</strong> → <strong>Nhận diện cầu thủ</strong>. Có
+            4 giây để chuyển lại game nếu cần.
+          </li>
+          <li>Kiểm tra ảnh thẻ, tên, mức cộng, loại MUA/BÁN và giá MIN/MAX trên ứng dụng.</li>
+        </ol>
+        <h3>Đặt điều kiện và bắt đầu</h3>
+        <ol>
+          <li>
+            Nhập <strong>giá mua tối đa</strong> hoặc <strong>giá bán tối thiểu</strong> bằng số BP
+            đầy đủ. Có thể bấm <strong>Dùng giá MIN / MAX đã nhận diện</strong> để điền nhanh.
+          </li>
+          <li>
+            Nhập giờ bắt đầu theo giờ Việt Nam (UTC+7), dạng <code>HH:MM</code> hoặc
+            <code>HH:MM:SS</code>. Để trống để chạy ngay sau khoảng chuyển game. Nếu khung giờ nhập
+            đã hết, lịch chuyển sang ngày hôm sau.
+          </li>
+          <li>
+            Nhập thời gian canh từ <strong>5 đến 1.800 giây</strong>, mặc định 120 giây. Giữ
+            <strong>Làm mới bảng giá</strong> bật để ứng dụng Esc và mở lại bảng lấy giá mới.
+          </li>
+          <li>
+            Lần đầu hãy giữ <strong>Chạy thử</strong> bật. Bấm <strong>Bắt đầu canh giá</strong> rồi
+            giữ game ở phía trước. Chế độ này làm mới bảng và kiểm tra điều kiện, không gửi lệnh.
+          </li>
+          <li>
+            Khi đã kiểm tra đúng cầu thủ, ngưỡng và luồng chạy, có thể tắt
+            <strong>Chạy thử</strong> để cho phép giao dịch thật. Khi xác nhận giá đổi và đạt
+            ngưỡng, ứng dụng chọn MAX khi mua hoặc MIN khi bán. Mỗi phiên tối đa một lần gửi.
+          </li>
+        </ol>
+        <table>
+          <thead>
+            <tr>
+              <th>Điều khiển</th>
+              <th>Tác dụng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>F8 / Dừng</strong></td>
+              <td>Dừng phiên đang chạy. Chuyển khỏi cửa sổ game cũng làm dừng thao tác.</td>
+            </tr>
+            <tr>
+              <td><strong>Thử chọn MAX / MIN</strong></td>
+              <td>
+                Bấm giá và đọc lại ô BP, không gửi lệnh. Đây là phép thử riêng với chế độ Chạy thử.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Chẩn đoán tab / F9</strong></td>
+              <td>
+                Trong màn hình Canh giá, khi không có phiên đang chạy: sau 4 giây đọc tab game và
+                lưu chẩn đoán, không mua/bán.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Nhật ký phiên</strong></td>
+              <td>Theo dõi các bước và lý do dừng.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Nếu báo <strong>lệnh trước chưa rõ kết quả</strong>, mở DS của bạn trong game để kiểm tra
+          trước, rồi mới bấm <strong>Đã kiểm tra lệnh trước</strong>.
+        </p>
+        <h3>Phạm vi hiện tại</h3>
+        <p>
+          Canh một cầu thủ mỗi phiên. Luồng mở lại hỗ trợ mua mới từ bảng TTCN và đăng ký lại trong
+          DS của bạn; bán mới từ kho cầu thủ chưa có vòng mở lại. Đăng ký lại mua chưa được đối
+          chiếu bằng ảnh bảng lệnh mua thực tế. Bố cục game khác ảnh đã kiểm thử có thể khiến nhận
+          diện dừng; khi đổi độ phân giải hoặc vị trí cửa sổ, hãy nhận diện lại. Không cam kết mua
+          được slot đầu tiên hoặc xử lý mọi hộp xác nhận của game.
+        </p>
+      </section>
+
+      <section id="du-lieu">
+        <h2>5. Dữ liệu, cập nhật và gửi tiếp</h2>
+        <p>
+          Sau khi chạy, ứng dụng tạo thư mục <code>FCO-Market-3-data</code> cạnh EXE. Dù phiên bản
+          ứng dụng là 4.0.0, tên thư mục dữ liệu vẫn được giữ để tương thích.
+        </p>
+        <ul>
+          <li>
+            <strong>Sao lưu/chuyển máy:</strong> đóng ứng dụng, rồi chép cả EXE và thư mục dữ liệu
+            sang vị trí mới. Giữ thư mục dữ liệu nằm cạnh EXE.
+          </li>
+          <li>
+            <strong>Cập nhật:</strong> đóng ứng dụng, giải nén bản mới vào thư mục đang dùng; giữ
+            nguyên thư mục dữ liệu. Mở EXE của bản mới.
+          </li>
+          <li>
+            <strong>Gửi cho người khác bắt đầu dùng:</strong> gửi gói ZIP phát hành. Không cần gửi
+            thư mục dữ liệu cá nhân, activity.log hoặc ảnh diagnostics.
+          </li>
+        </ul>
+      </section>
+
+      <section id="loi">
+        <h2>6. Xử lý sự cố thường gặp</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Hiện tượng</th>
+              <th>Cách xử lý</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Không mở được giao diện</td>
+              <td>
+                Giải nén ZIP đầy đủ, kiểm tra dùng Windows x64 và cài WebView2 Runtime từ Microsoft
+                rồi mở lại. Nếu vẫn lỗi, gửi ảnh thông báo lỗi cho người cung cấp ứng dụng.
+              </td>
+            </tr>
+            <tr>
+              <td>Không lưu được dữ liệu</td>
+              <td>
+                Chuyển thư mục ứng dụng sang Documents hoặc Desktop có quyền ghi; chạy EXE ở ngoài
+                ZIP.
+              </td>
+            </tr>
+            <tr>
+              <td>Không tìm thấy FC Online</td>
+              <td>
+                Mở một cửa sổ game có tiêu đề FC ONLINE. Mở đúng hộp cầu thủ trước khi nhận diện.
+              </td>
+            </tr>
+            <tr>
+              <td>Không nhận diện / không click được</td>
+              <td>
+                Kiểm tra đúng tab, số lượng 1 và thẻ cầu thủ; giữ game ở phía trước, không bị che.
+                Kiểm tra mức quyền của game và ứng dụng. Có thể dùng Chẩn đoán tab để lưu thông tin
+                lỗi.
+              </td>
+            </tr>
+            <tr>
+              <td>Nhận diện dừng sau khi đổi cửa sổ</td>
+              <td>
+                Dừng phiên, đưa game về bố cục ổn định và nhận diện lại. Giữ đúng dòng cầu thủ đang
+                thấy trong DS của bạn.
+              </td>
+            </tr>
+            <tr>
+              <td>Không thấy lệnh được gửi</td>
+              <td>
+                Kiểm tra Chạy thử có đang bật, ngưỡng và khung giờ. Xem Nhật ký phiên và DS của bạn;
+                không xác nhận đã kiểm tra lệnh trước khi chưa kiểm tra trong game.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <footer>
+        FCO Market 4.0.0 · Hướng dẫn đi kèm bản phát hành. EXE đã qua tự kiểm tra giao diện WebView2
+        và OCR trên máy tạo bản phát hành; chưa xác nhận khả năng chạy trên mọi cấu hình Windows.
+        Giấy phép các thư viện đi kèm nằm trong thư mục licenses. Có thể dùng Ctrl+P trong trình
+        duyệt để in hoặc lưu hướng dẫn thành PDF.
+      </footer>
+    </main>
+  </body>
+</html>

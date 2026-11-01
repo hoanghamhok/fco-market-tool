@@ -1,0 +1,5 @@
+[tool.black]
+line-length = 100
+target-version = ['py313']
+include = '\.py$'
+extend-exclude = '/(\.venv|node_modules|data-v3|release|reports|vendor|\.build-staging)/'
