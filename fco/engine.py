@@ -130,11 +130,13 @@ def monitor(
                 io.wait(0.25)
                 continue
         try:
+            round_started = time.perf_counter()
             current = (
                 refresher.cycle(io, reader, bound)
                 if refresher is not None
                 else io.scan(reader, bound)
             )
+            round_ms = (time.perf_counter() - round_started) * 1000
         except ValueError as error:
             detector.invalidate()
             errors += 1
@@ -161,9 +163,9 @@ def monitor(
             )
             warned = True
         changed = detector.observe(current.quote)
-        if refresher is not None:
+        if refresher is not None and (changed or current.quote != detector.baseline):
             # Confirm in the newly opened dialog, without an extra close/open cycle.
-            io.wait(0.06)
+            io.wait(0.02)
             confirmed = io.scan(reader, bound)
             if confirmed.quote != current.quote:
                 detector.invalidate()
@@ -179,8 +181,9 @@ def monitor(
             if dry_run:
                 emit("status", "CHẠY THỬ: đã thấy giá mới đạt ngưỡng. Không gửi mua/bán.")
                 return "preview"
+            trigger_started = time.perf_counter()
             emit(
-                "status",
+                "phase",
                 (
                     "Giá đã đổi. Bấm MAX → Mua cầu thủ màu đỏ…"
                     if current.side == "buy"
@@ -188,6 +191,7 @@ def monitor(
                 ),
             )
             selected = select_price(io, reader, bound, limit, current=current)
+            price_verify_ms = (time.perf_counter() - trigger_started) * 1000
             if window is not None and window.state(clock()) != "active":
                 emit("status", "Hết khung giờ trước khi gửi; đã dừng.")
                 return "expired"
@@ -202,6 +206,14 @@ def monitor(
             journal.write("pending", **record)
             try:
                 io.click(selected, "submit")
+                emit(
+                    "timing",
+                    dict(
+                        round_ms=round_ms,
+                        price_verify_ms=price_verify_ms,
+                        trigger_to_click_ms=(time.perf_counter() - trigger_started) * 1000,
+                    ),
+                )
                 result = wait_result(io, reader, bound)
             except Exception as error:
                 journal.write("unverified", error=str(error), **record)
@@ -218,4 +230,4 @@ def monitor(
             return result
         elif changed:
             emit("status", "Giá đổi nhưng chưa đạt ngưỡng; tiếp tục chờ")
-        io.wait(0.35 if refresher is not None else 0.12)
+        io.wait(0.05 if refresher is not None else 0.04)

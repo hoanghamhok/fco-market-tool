@@ -42,6 +42,30 @@ class FakeIO:
 
 
 class EngineTests(unittest.TestCase):
+    def test_unchanged_refresh_reopens_without_extra_confirmation_scan(self):
+        old = snapshot()
+        new = snapshot(low=110, high=130)
+        scans = iter([old, new, new])
+        calls = []
+        waits = []
+        io = FakeIO([])
+        io.require_input = lambda: None
+        io.wait = waits.append
+
+        def scan(*args, **kwargs):
+            calls.append("read")
+            return next(scans)
+
+        io.scan = scan
+        refresh = SimpleNamespace(cycle=lambda *args: scan(), rounds=1)
+        self.assertEqual(
+            monitor(io, object(), old, 130, True, self.journal, lambda *_: None, refresher=refresh),
+            "preview",
+        )
+        self.assertEqual(calls, ["read", "read", "read"])
+        self.assertEqual(waits, [0.05, 0.02])
+        self.assertIsNone(self.journal.pending())
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(dir=Path(__file__).parent)
         self.addCleanup(self.temp.cleanup)

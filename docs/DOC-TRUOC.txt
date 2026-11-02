@@ -1,8 +1,8 @@
-FCO MARKET 4.0.0 — ĐỌC TRƯỚC KHI DÙNG
+FCO MARKET 4.1.0 — ĐỌC TRƯỚC KHI DÙNG
 
 1. Giải nén toàn bộ ZIP bằng Extract All / Giải nén tất cả.
 2. Mở HUONG-DAN.html bằng trình duyệt để đọc hướng dẫn đầy đủ.
-3. Chạy FCO-Market-4.0.0.exe trên máy Windows 64-bit (x64).
+3. Chạy FCO-Market-4.1.0.exe trên máy Windows 64-bit (x64).
 
 Không cần cài Python hoặc tải mã nguồn.
 Không chạy EXE ngay bên trong ZIP. Đặt ứng dụng ở thư mục có quyền ghi,

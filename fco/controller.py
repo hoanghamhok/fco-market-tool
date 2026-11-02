@@ -156,6 +156,14 @@ class DesktopAPI:
             self._state["revision"] += 1
 
     def _emit(self, kind, data):
+        if kind == "timing":
+            self._emit(
+                "status",
+                "Hiệu năng cục bộ: làm mới/đọc giá {round_ms:.0f} ms · "
+                "chọn và xác minh BP {price_verify_ms:.0f} ms · "
+                "từ xác nhận giá đổi đến bấm gửi {trigger_to_click_ms:.0f} ms.".format(**data),
+            )
+            return
         if kind == "snapshot":
             self._snapshot(data)
         elif kind in ("phase", "status", "error"):

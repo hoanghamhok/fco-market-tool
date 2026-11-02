@@ -57,6 +57,21 @@ class ScheduleTests(unittest.TestCase):
 
 
 class ParentImageTests(unittest.TestCase):
+    def test_cached_parent_rejects_changed_state_and_register_button(self):
+        parent = ParentReader(self.ocr)
+        image = self.image("orders-hover")
+        bound = DialogReader(self.ocr).read(self.image("sell"))
+        entry = parent.find_entry(image, bound)
+        self.assertEqual(parent.register_button(image, bound, entry), (1453, 278))
+        changed = image.copy()
+        ImageDraw.Draw(changed).rectangle((1410, 260, 1494, 294), fill="#4d5151")
+        with self.assertRaises(ValueError):
+            parent.register_button(changed, bound, entry)
+        changed = image.copy()
+        ImageDraw.Draw(changed).rectangle((1300, 260, 1410, 295), fill="#4d5151")
+        with self.assertRaises(ValueError):
+            parent.find_entry(changed, bound)
+
     @classmethod
     def setUpClass(cls):
         cls.ocr = OCR()

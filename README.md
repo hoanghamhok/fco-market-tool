@@ -29,6 +29,8 @@ vendor/                OCR models, giấy phép và nguồn thư viện
 
 ## Kiểm tra
 
+Tối ưu tốc độ 4.1.0 và cách đo: xem [PERFORMANCE.md](docs/PERFORMANCE.md).
+
 Chạy từ thư mục dự án:
 
 ```powershell

@@ -122,7 +122,7 @@ class Desktop:
         x, y = snapshot.region(key).center
         if not (0 < x < snapshot.frame.width and 0 < y < snapshot.frame.height):
             raise Stopped("Nút nằm ngoài cửa sổ")
-        pyautogui.click(rect.left + x, rect.top + y)
+        pyautogui.click(rect.left + x, rect.top + y, _pause=False)
         self.guard()
 
     def require_input(self):
@@ -132,11 +132,11 @@ class Desktop:
     def escape(self):
         self.require_input()
         self.guard()
-        pyautogui.keyDown("esc")
+        pyautogui.keyDown("esc", _pause=False)
         try:
             self.stop.wait(0.04)
         finally:
-            pyautogui.keyUp("esc")
+            pyautogui.keyUp("esc", _pause=False)
         self.guard()
 
     def frame_point(self, frame, x, y):
@@ -152,12 +152,12 @@ class Desktop:
 
     def move_point(self, frame, x, y):
         self.require_input()
-        pyautogui.moveTo(*self.frame_point(frame, x, y))
+        pyautogui.moveTo(*self.frame_point(frame, x, y), _pause=False)
         self.guard()
 
     def click_point(self, frame, x, y):
         self.require_input()
-        pyautogui.click(*self.frame_point(frame, x, y))
+        pyautogui.click(*self.frame_point(frame, x, y), _pause=False)
         self.guard()
 
     def wait(self, seconds):

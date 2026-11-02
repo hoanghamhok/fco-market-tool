@@ -84,4 +84,4 @@ class BoundsTests(unittest.TestCase):
         self.assertEqual(frame.origin, (0, 0))
         with patch("fco.desktop.pyautogui.click") as click:
             desktop.click_point(frame, 1453, 278)
-        click.assert_called_once_with(1453, 278)
+        click.assert_called_once_with(1453, 278, _pause=False)

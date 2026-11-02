@@ -1,11 +1,13 @@
 """Close the quote dialog and reopen it through a verified parent control."""
 
 from dataclasses import dataclass
+from collections import OrderedDict
 import numpy as np
 from pathlib import Path
 from .storage import atomic_json
 from .dialog import Box, locate_dialog, NoDialog
 from .ocr import normalize
+from .timing import readiness_delays
 
 
 def area(image, coords):
@@ -23,9 +25,27 @@ class ParentReader:
         self.ocr = ocr
         self.diagnostics = Path(diagnostics) if diagnostics else None
         self.last_report = {}
+        self._cache = OrderedDict()
+
+    def _read(self, kind, crop, method):
+        # Exact pixels only: changed text/background must be read again.
+        key = (kind, crop.mode, crop.size, crop.tobytes())
+        if key not in self._cache:
+            value = method(crop)
+            self._cache[key] = value
+            if len(self._cache) > 32:
+                self._cache.popitem(last=False)
+        self._cache.move_to_end(key)
+        return self._cache[key]
 
     def root(self, image):
-        title = normalize(self.ocr.text(area(image, (0.46, 0.073, 0.54, 0.111)).crop(image), 60))
+        title = normalize(
+            self._read(
+                "root",
+                area(image, (0.46, 0.073, 0.54, 0.111)).crop(image),
+                lambda crop: self.ocr.text(crop, 60),
+            )
+        )
         if title != "ttcn":
             raise ValueError("Chưa trở về đúng bảng TTCN; chưa mở lại")
 
@@ -66,7 +86,7 @@ class ParentReader:
             raise ValueError("Cần tab DS của bạn để đăng ký lại lệnh đang treo")
         names = area(image, (0.246, 0.239, 0.335, 0.800))
         candidates = []
-        for text, (_, top, _, bottom) in self.ocr.lines(names.crop(image)):
+        for text, (_, top, _, bottom) in self._read("names", names.crop(image), self.ocr.lines):
             if normalize(text) != normalize(bound.name):
                 continue
             y = names.y + (top + bottom) // 2
@@ -76,7 +96,7 @@ class ParentReader:
                 round(image.width * 0.014),
                 round(image.height * 0.016),
             )
-            boost = self.ocr.number(badge.crop(image), 50)
+            boost = self._read("boost", badge.crop(image), lambda crop: self.ocr.number(crop, 50))
             if boost != bound.boost:
                 continue
             status = Box(
@@ -85,7 +105,7 @@ class ParentReader:
                 round(image.width * 0.048),
                 round(image.height * 0.030),
             )
-            state = normalize(self.ocr.vietnamese(status.crop(image)))
+            state = normalize(self._read("state", status.crop(image), self.ocr.vietnamese))
             expected = "dangmua" if bound.side == "buy" else "dangban"
             if state != expected:
                 raise ValueError("Lệnh không còn ở trạng thái đang mua/bán; đã dừng")
@@ -104,7 +124,7 @@ class ParentReader:
             round(image.width * 0.038),
             round(image.height * 0.022),
         )
-        text = normalize(self.ocr.vietnamese(box.crop(image)))
+        text = normalize(self._read("register", box.crop(image), self.ocr.vietnamese))
         if text not in ("dangkylai", "dangkilai"):
             raise ValueError("Chưa nhận diện chắc nút Đăng ký lại; không bấm cạnh nút Hủy")
         return box.center
@@ -114,7 +134,7 @@ class ParentReader:
         if bound.side != "buy":
             raise ValueError("Chưa xác nhận được tab DS của bạn sau khi đóng hộp; chưa mở lại")
         box = area(image, (0.624, 0.871, 0.724, 0.915))
-        text = normalize(self.ocr.vietnamese(box.crop(image).getchannel("G")))
+        text = normalize(self._read("market", box.crop(image).getchannel("G"), self.ocr.vietnamese))
         if text != "muacauthu":
             raise ValueError("Chưa thấy nút mở Mua cầu thủ trên bảng TTCN")
         rgb = np.asarray(box.crop(image).convert("RGB")).astype(np.int16)
@@ -155,8 +175,8 @@ class Refresher:
             io.scan(reader, bound)
             self.step("Bấm Esc để đóng hộp")
             io.escape()
-            for _ in range(12):
-                io.wait(0.08)
+            for delay in readiness_delays(0.96):
+                io.wait(delay)
                 frame = io.capture()
                 try:
                     locate_dialog(frame.image)
@@ -194,8 +214,8 @@ class Refresher:
             entry = self.parent.find_entry(frame.image, bound)
             io.move_point(frame, round(frame.image.width * 0.64), entry.row_y)
             last = None
-            for _ in range(12):
-                io.wait(0.08)
+            for delay in readiness_delays(0.96):
+                io.wait(delay)
                 hover = io.capture()
                 try:
                     point = self.parent.register_button(hover.image, bound, entry)
@@ -211,8 +231,8 @@ class Refresher:
             io.click_point(frame, *point)
         self.step("Chờ hộp mở và kiểm tra lại thẻ / MIN / MAX")
         last = None
-        for _ in range(15):
-            io.wait(0.08)
+        for delay in readiness_delays(1.2):
+            io.wait(delay)
             try:
                 reopened = io.scan(reader, bound)
                 self.rounds += 1
