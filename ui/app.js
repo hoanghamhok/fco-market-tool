@@ -23,6 +23,83 @@ let api,
   undo = null;
 let writeQueue = Promise.resolve();
 let pendingWrites = 0;
+let updateState = { status: 'idle' },
+  dismissedUpdate = '',
+  quietUpdate = false;
+function renderUpdate(state = updateState) {
+  updateState = state;
+  const status = state.status;
+  const working = ['checking', 'downloading', 'preparing', 'installing'].includes(status);
+  const updating = ['downloading', 'preparing', 'installing'].includes(status);
+  const key = `${status}:${state.version}`;
+  $('check-update').disabled = working || !data?.updates_enabled;
+  $('check-update').textContent = status === 'checking' ? 'Đang kiểm tra…' : 'Kiểm tra cập nhật';
+  $('update-panel').hidden =
+    status === 'idle' ||
+    dismissedUpdate === key ||
+    (quietUpdate && ['current', 'error', 'checking'].includes(status));
+  const titles = {
+    checking: 'Đang kiểm tra phiên bản mới',
+    available: `Có phiên bản ${state.version}`,
+    downloading: `Đang tải phiên bản ${state.version}`,
+    downloaded: 'Bản cập nhật đã sẵn sàng',
+    preparing: 'Đang chuẩn bị cập nhật',
+    installing: 'Đang khởi động lại',
+    current: 'Ứng dụng đã được cập nhật',
+    error: 'Chưa cập nhật được',
+  };
+  $('update-title').textContent = titles[status] || '';
+  $('update-message').textContent =
+    state.message ||
+    (status === 'available'
+      ? data?.update_install_supported
+        ? 'Tải bản mới ngay tại đây. Các cài đặt của bạn được giữ nguyên.'
+        : 'Chạy bản EXE để tải và cài cập nhật trong ứng dụng.'
+      : status === 'downloading'
+        ? `Đã tải ${state.progress}%`
+        : '');
+  $('update-progress').hidden = status !== 'downloading';
+  $('update-progress').value = state.progress || 0;
+  $('update-notes-wrap').hidden = !state.notes || !['available', 'downloaded'].includes(status);
+  $('update-notes').textContent = state.notes || '';
+  $('apply-update').hidden = !['available', 'downloaded', 'preparing', 'installing'].includes(
+    status
+  );
+  $('apply-update').textContent =
+    status === 'available' ? 'Tải bản cập nhật' : 'Khởi động lại để cập nhật';
+  $('apply-update').disabled = working || busy || !data?.update_install_supported;
+  $('dismiss-update').hidden = updating;
+  $('dismiss-update').textContent = ['available', 'downloaded'].includes(status)
+    ? 'Để sau'
+    : 'Đóng';
+  if (updating) {
+    for (const id of ['detect', 'diagnose', 'start-watch', 'test-price']) $(id).disabled = true;
+  }
+}
+async function checkUpdate(quiet = false) {
+  quietUpdate = quiet;
+  dismissedUpdate = '';
+  try {
+    renderUpdate(await api.check_update());
+  } catch (e) {
+    renderUpdate({ status: 'error', message: String(e?.message || e) });
+  }
+}
+async function applyUpdate() {
+  quietUpdate = false;
+  try {
+    if (updateState.status === 'available') {
+      renderUpdate(await api.download_update());
+    } else if (updateState.status === 'downloaded') {
+      $('apply-update').disabled = true;
+      await writeQueue;
+      renderUpdate(await api.install_update());
+      await api.restart_for_update();
+    }
+  } catch (e) {
+    renderUpdate({ status: 'error', message: String(e?.message || e) });
+  }
+}
 function error(message) {
   $('global-error').textContent = String(message?.message || message).replace(/^Error:\s*/, '');
   $('global-error').hidden = false;
@@ -205,6 +282,8 @@ function watchSettings() {
   };
 }
 function renderState(state) {
+  busy = state.busy;
+  renderUpdate(state.update);
   if (state.revision === revision) return;
   revision = state.revision;
   busy = state.busy;
@@ -224,10 +303,15 @@ function renderState(state) {
     'watch-dry',
     'acknowledge',
   ])
-    $(id).disabled = busy;
+    $(id).disabled =
+      busy || ['downloading', 'preparing', 'installing'].includes(updateState.status);
   const shot = state.snapshot;
   for (const id of ['start-watch', 'test-price', 'use-price'])
-    $(id).disabled = busy || !shot || shot.quantity !== 1;
+    $(id).disabled =
+      busy ||
+      ['downloading', 'preparing', 'installing'].includes(updateState.status) ||
+      !shot ||
+      shot.quantity !== 1;
   $('stop-watch').disabled = !busy;
   $('player-empty').hidden = !!shot;
   $('player-detail').hidden = !shot;
@@ -281,6 +365,12 @@ async function init() {
     api = window.pywebview.api;
     data = await api.bootstrap();
     $('version').textContent = data.version;
+    $('check-update').addEventListener('click', () => checkUpdate());
+    $('apply-update').addEventListener('click', applyUpdate);
+    $('dismiss-update').addEventListener('click', () => {
+      dismissedUpdate = `${updateState.status}:${updateState.version}`;
+      renderUpdate();
+    });
     all('[data-page]').forEach((el) =>
       el.addEventListener('click', () => showPage(el.dataset.page))
     );
@@ -384,6 +474,7 @@ async function init() {
     renderState(data.state);
     $('loading').hidden = true;
     document.documentElement.dataset.ready = 'true';
+    if (data.auto_check_updates) checkUpdate(true);
     const poll = async () => {
       try {
         renderState(await api.get_state());

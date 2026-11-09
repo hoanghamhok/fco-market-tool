@@ -85,6 +85,7 @@ try {
         if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $hash) { throw "Publication failed: $target" }
     }
     Copy-Item -LiteralPath $reportPath -Destination (Join-Path $release 'self-test.json') -Force
+    [IO.File]::WriteAllText((Join-Path $release 'SHA256SUMS.txt'), ($hash.ToLowerInvariant() + '  ' + $name + "`n"), [Text.UTF8Encoding]::new($false))
     # Remove old executables only after both published copies match the verified EXE.
     foreach ($folder in @($release,$downloads)) {
         foreach ($file in @(Old-Executables $folder)) {

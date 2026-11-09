@@ -4,7 +4,6 @@ import multiprocessing
 import os
 from pathlib import Path
 import sys
-from fco.desktop import enable_dpi_awareness
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
@@ -14,6 +13,12 @@ if __name__ == "__main__":
         sys.stdout = open(os.devnull, "w", encoding="utf-8")
     if sys.stderr is None:
         sys.stderr = open(os.devnull, "w", encoding="utf-8")
+    if "--apply-update" in sys.argv:
+        from fco.updater import run_helper
+
+        sys.exit(run_helper())
+    from fco.desktop import enable_dpi_awareness
+
     enable_dpi_awareness()
     if "--self-test" in sys.argv:
         from fco.diagnostics.self_test import run_self_test

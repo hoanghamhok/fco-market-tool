@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from fco.controller import DesktopAPI
 
@@ -65,3 +65,27 @@ class ControllerTests(unittest.TestCase):
         self.assertTrue(data["watch"]["dry_run"])
         self.assertTrue(data["state"]["pending"])
         self.assertEqual(data["salary"]["formation"], "4-3-3")
+
+    def test_detection_brings_result_window_forward(self):
+        self.api._window = Mock()
+        controller = Mock()
+        with patch("fco.controller.OCR"), patch("fco.controller.DialogReader"), patch.object(
+            self.api, "_snapshot"
+        ) as snapshot:
+            self.api._run("detect", {}, controller, None, None, None)
+        snapshot.assert_called_once_with(controller.scan.return_value)
+        self.api._window.restore.assert_called_once()
+        self.api._window.show.assert_called_once()
+        self.assertIn("Đã nhận diện", self.api.get_state()["status"])
+
+    def test_only_confirmed_trade_brings_result_window_forward(self):
+        settings = self.api.bootstrap()["watch"] | {"refresh_enabled": False}
+        for result, expected in (("confirmed", 1), ("unverified", 0), ("preview", 0)):
+            with self.subTest(result=result):
+                self.api._window = Mock()
+                with patch("fco.controller.OCR"), patch("fco.controller.DialogReader"), patch(
+                    "fco.controller.monitor", return_value=result
+                ):
+                    self.api._run("watch", settings, Mock(), Mock(), 1, Mock())
+                self.api._window.restore.assert_called_once()
+                self.assertEqual(self.api._window.show.call_count, expected)

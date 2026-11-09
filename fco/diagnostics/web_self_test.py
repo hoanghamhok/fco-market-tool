@@ -11,7 +11,7 @@ def run_web_self_test(root, snapshot=None):
     import webview
     from fco.web_app import create_window
 
-    window, api = create_window(root=root, hidden=True)
+    window, api = create_window(root=root, hidden=True, updates=False)
     if snapshot:
         api._snapshot(snapshot)
     result = {}

@@ -54,7 +54,8 @@
       </nav>
       <div class="sidebar-bottom">
         <div class="local-status"><span class="dot"></span> Dữ liệu trên máy</div>
-        <div class="version">FCO Market <span id="version">4.0</span></div>
+        <div class="version">FCO Market <span id="version">4.2.0</span></div>
+        <button class="update-check" id="check-update">Kiểm tra cập nhật</button>
       </div>
     </aside>
     <main>
@@ -69,6 +70,27 @@
         >
       </header>
       <div id="global-error" class="notice error" role="alert" hidden></div>
+      <section id="update-panel" class="update-panel" aria-label="Cập nhật ứng dụng" hidden>
+        <div class="update-copy">
+          <strong id="update-title"></strong>
+          <p id="update-message" role="status" aria-live="polite"></p>
+          <progress
+            id="update-progress"
+            max="100"
+            value="0"
+            aria-label="Tiến độ tải bản cập nhật"
+            hidden
+          ></progress>
+          <details id="update-notes-wrap" hidden>
+            <summary>Nội dung phiên bản mới</summary>
+            <p id="update-notes"></p>
+          </details>
+        </div>
+        <div class="update-actions">
+          <button id="apply-update" hidden>Tải bản cập nhật</button>
+          <button id="dismiss-update" aria-label="Đóng thông báo cập nhật">Để sau</button>
+        </div>
+      </section>
       <section id="page-salary" class="page">
         <div class="salary-toolbar">
           <div class="segmented" aria-label="Chọn sơ đồ">

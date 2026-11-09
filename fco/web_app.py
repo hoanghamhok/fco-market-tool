@@ -7,7 +7,7 @@ from . import VERSION
 from .controller import DesktopAPI
 
 
-def create_window(root=APP_ROOT, hidden=False, title=None):
+def create_window(root=APP_ROOT, hidden=False, title=None, updates=True):
     import webview
 
     folder = RESOURCE_ROOT / "ui"
@@ -24,7 +24,7 @@ def create_window(root=APP_ROOT, hidden=False, title=None):
     )
     if styles != 1 or scripts != 1:
         raise ValueError("The UI template must reference style.css and app.js exactly once.")
-    api = DesktopAPI(root)
+    api = DesktopAPI(root, updates=updates)
     window = webview.create_window(
         title or f"FCO Market {VERSION}",
         html=html,

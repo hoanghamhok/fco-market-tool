@@ -14,6 +14,7 @@
 | `fco/engine.py`, `pricing.py`, `schedule.py` | Canh giá, điều kiện giá, khung giờ Việt Nam. |
 | `fco/storage.py` | JSON nguyên tử, khóa phiên, nhật ký lệnh. |
 | `fco/paths.py` | Đường dẫn tài nguyên và dữ liệu của mã nguồn/EXE. |
+| `fco/updater.py` | Kiểm tra GitHub Releases, tải/kiểm tra EXE và thay file bằng tiến trình riêng. |
 | `fco/diagnostics/` | Tự kiểm tra OCR và WebView2 trong cả mã nguồn lẫn EXE. |
 | `tests/` | Kiểm thử hồi quy nghiệp vụ, OCR, giao dịch và lưu dữ liệu. |
 | `legacy/tkinter/` | Giao diện cũ để tra cứu; không tham gia luồng chạy chính. |

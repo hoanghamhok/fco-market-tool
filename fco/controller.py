@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import threading
 import time
+import sys
 
 from fco.paths import APP_ROOT
 from fco.calculators.salary import FORMATIONS, clean_settings, parse_salary
@@ -20,10 +21,11 @@ from .pricing import parse_bp
 from .refresh import ParentReader, Refresher
 from .schedule import ResetWindow
 from .storage import FileLock, Journal, atomic_json
+from .updater import Updater
 
 
 class DesktopAPI:
-    def __init__(self, root=APP_ROOT):
+    def __init__(self, root=APP_ROOT, updates=True):
         self._root = Path(root)
         self._root.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
@@ -34,6 +36,7 @@ class DesktopAPI:
         self._closing = False
         self._close_ready = False
         self._journal = Journal(self._root)
+        self._updater = Updater(self._root, enabled=updates)
         self._state = dict(
             busy=False,
             status="Sẵn sàng nhận diện cầu thủ.",
@@ -74,7 +77,10 @@ class DesktopAPI:
                 salary=clean_settings(self._read("salary-settings.json", {})),
                 tax=tax,
                 watch=settings,
-                state=copy.deepcopy(self._state),
+                state=self.get_state(),
+                auto_check_updates=self._updater.enabled and bool(getattr(sys, "frozen", False)),
+                updates_enabled=self._updater.enabled,
+                update_install_supported=bool(getattr(sys, "frozen", False)),
                 page=page if page in ("salary", "tax", "watch") else "salary",
             )
 
@@ -148,7 +154,30 @@ class DesktopAPI:
 
     def get_state(self):
         with self._lock:
-            return copy.deepcopy(self._state)
+            state = copy.deepcopy(self._state)
+            state["update"] = self._updater.state()
+            return state
+
+    def check_update(self):
+        return self._updater.check()
+
+    def download_update(self):
+        with self._lock:
+            if self._closing or self._state["busy"]:
+                raise ValueError("Hãy dừng phiên canh giá trước khi cập nhật.")
+            return self._updater.start_download()
+
+    def install_update(self):
+        with self._lock:
+            if self._closing or self._state["busy"]:
+                raise ValueError("Hãy dừng phiên canh giá trước khi cập nhật.")
+            return self._updater.prepare_install()
+
+    def restart_for_update(self):
+        if self._updater.state()["status"] != "installing":
+            raise ValueError("Bộ cập nhật chưa sẵn sàng.")
+        if self._window:
+            self._window.destroy()
 
     def _set(self, **values):
         with self._lock:
@@ -231,6 +260,8 @@ class DesktopAPI:
 
     def start_action(self, action, settings):
         with self._lock:
+            if self._updater.state()["status"] in ("downloading", "preparing", "installing"):
+                raise ValueError("Hãy hoàn tất cập nhật trước khi chạy phiên mới.")
             if self._closing or self._state["busy"]:
                 raise ValueError("Một phiên đang chạy. Hãy dừng phiên trước.")
             if action not in ("detect", "test", "watch", "diagnose"):
@@ -281,6 +312,7 @@ class DesktopAPI:
 
     def _run(self, action, settings, controller, bound, limit, reset_window):
         ocr = None
+        show_result = False
         try:
             with FileLock(self._root / ".control.lock"):
                 if self._stop.wait(4):
@@ -298,6 +330,7 @@ class DesktopAPI:
                     self._emit(
                         "status", "Đã nhận diện. Kiểm tra cầu thủ và ngưỡng giá trước khi canh."
                     )
+                    show_result = True
                 elif action == "test":
                     shot = select_price(controller, reader, bound)
                     self._snapshot(shot)
@@ -310,7 +343,7 @@ class DesktopAPI:
                         if settings["refresh_enabled"]
                         else None
                     )
-                    monitor(
+                    result = monitor(
                         controller,
                         reader,
                         bound,
@@ -321,6 +354,7 @@ class DesktopAPI:
                         refresher=refresher,
                         window=reset_window.after_setup(not settings["reset_start"].strip()),
                     )
+                    show_result = result == "confirmed"
         except Exception as error:
             diagnostic = error if isinstance(error, RecognitionError) else error.__cause__
             if isinstance(diagnostic, RecognitionError):
@@ -345,6 +379,8 @@ class DesktopAPI:
                     self._window.destroy()
                 elif not self._closing:
                     self._window.restore()
+                    if show_result:
+                        self._window.show()
 
     def _on_closing(self):
         if self._close_ready:

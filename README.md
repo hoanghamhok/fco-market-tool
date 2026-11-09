@@ -7,6 +7,7 @@
 - **Người sử dụng:** đọc [hướng dẫn](docs/HUONG-DAN.html) và [cách mở ứng dụng](docs/DOC-TRUOC.txt).
 - **Phát triển:** Python 3.13 x64; chạy `setup.bat`, sau đó `start.bat`.
 - **Build EXE:** `build.bat` kiểm tra EXE trước khi xuất vào `release/` và Downloads.
+- **Phát hành/cập nhật:** [hướng dẫn GitHub Releases và cập nhật trong ứng dụng](docs/CAP-NHAT.md).
 - **Trách nhiệm từng phần:** xem [kiến trúc](docs/ARCHITECTURE.md).
 
 ## Cấu trúc
