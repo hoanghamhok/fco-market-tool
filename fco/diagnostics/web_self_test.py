@@ -55,7 +55,22 @@ def run_web_self_test(root, snapshot=None):
                 assert(!document.getElementById('watch-dry').disabled && document.getElementById('watch-dry').checked,'dry run default');
                 set('watch-limit','800.000.000');set('watch-duration','180');await writeQueue;
                 click('[data-page="salary"]');await writeQueue;
-                return {salary_total:275,second_total:48,tax_net:'6384000000000',pages:3,clear_undo:true,bridge:true};
+                const oldEnabled=data.updates_enabled,oldInstall=data.update_install_supported;
+                data.updates_enabled=true;data.update_install_supported=true;
+                renderUpdate({status:'available',version:'99.0.0',notes:'<img src=x onerror=alert(1)>'});
+                assert(!document.getElementById('update-panel').hidden,'update notification');
+                assert(document.getElementById('update-notes').textContent.includes('<img'),'release notes rendered as text');
+                assert(!document.querySelector('#update-notes img'),'release notes never execute HTML');
+                const state=await api.get_state();
+                renderState({...state,update:{status:'downloading',progress:50,version:'99.0.0'}});
+                assert(document.getElementById('detect').disabled,'no game actions while downloading');
+                assert(document.getElementById('update-progress').value===50,'update progress');
+                renderState({...state,update:{status:'downloaded',version:'99.0.0'}});
+                assert(!document.getElementById('detect').disabled,'game actions restored after download');
+                assert(document.getElementById('apply-update').textContent.includes('Khởi động lại'),'restart update button');
+                data.updates_enabled=oldEnabled;data.update_install_supported=oldInstall;
+                renderState(state);
+                return {salary_total:275,second_total:48,tax_net:'6384000000000',pages:3,clear_undo:true,bridge:true,update_ui:true};
             })()"""
             completed = threading.Event()
 
@@ -74,6 +89,7 @@ def run_web_self_test(root, snapshot=None):
                 for page in ("salary", "tax", "watch"):
                     bounds = window.evaluate_js("""(()=>{
                         showPage('%s',false);
+                        renderUpdate({status:'available',version:'99.0.0',notes:'Nội dung bản mới để kiểm tra bố cục.'});
                         const main=document.querySelector('main');
                         return {overflow:main.scrollWidth>main.clientWidth+1,
                             page:document.documentElement.scrollWidth>innerWidth+1};

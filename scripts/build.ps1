@@ -9,6 +9,17 @@ $stage = Join-Path $root '.build-staging'
 $release = Join-Path $root 'release'
 $python = Join-Path $root '.venv/Scripts/python.exe'
 
+function Get-Sha256([string]$path) {
+    $stream = [IO.File]::OpenRead($path)
+    $algorithm = [Security.Cryptography.SHA256]::Create()
+    try {
+        return [BitConverter]::ToString($algorithm.ComputeHash($stream)).Replace('-', '')
+    } finally {
+        $algorithm.Dispose()
+        $stream.Dispose()
+    }
+}
+
 function Assert-Child([string]$base, [string]$target) {
     $base = [IO.Path]::GetFullPath($base).TrimEnd('\')
     $target = [IO.Path]::GetFullPath($target)
@@ -74,7 +85,7 @@ try {
         Write-Output "Verified $name. Existing releases are unchanged."
         return
     }
-    $hash = (Get-FileHash -LiteralPath $artifact -Algorithm SHA256).Hash
+    $hash = Get-Sha256 $artifact
     foreach ($folder in @($release,$downloads)) {
         $target = Join-Path $folder $name
         Assert-Child $folder $target
@@ -82,7 +93,7 @@ try {
         Assert-Child $folder $temporary
         Copy-Item -LiteralPath $artifact -Destination $temporary -Force
         Move-Item -LiteralPath $temporary -Destination $target -Force
-        if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $hash) { throw "Publication failed: $target" }
+        if ((Get-Sha256 $target) -ne $hash) { throw "Publication failed: $target" }
     }
     Copy-Item -LiteralPath $reportPath -Destination (Join-Path $release 'self-test.json') -Force
     [IO.File]::WriteAllText((Join-Path $release 'SHA256SUMS.txt'), ($hash.ToLowerInvariant() + '  ' + $name + "`n"), [Text.UTF8Encoding]::new($false))

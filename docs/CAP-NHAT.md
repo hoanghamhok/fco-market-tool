@@ -6,6 +6,20 @@ Repo phát hành phải công khai; ứng dụng không chứa GitHub token.
 
 ## Phát hành một bản mới
 
+### Tự động trên GitHub
+
+Tăng `VERSION` trong `fco/__init__.py` rồi đẩy thay đổi lên nhánh `main`.
+Workflow **Publish Windows release** tự cài môi trường Windows/Python 3.13,
+chạy bộ kiểm thử, đóng gói và kiểm tra EXE/giao diện, thử cập nhật/khôi phục,
+rồi tạo Release kèm EXE và SHA256SUMS.txt. Chỉ công bố sau khi tất cả kiểm tra
+thành công. Xem tiến độ trong tab Actions. Có thể chạy lại bằng Run workflow;
+workflow không ghi đè Release đã tồn tại với cùng phiên bản.
+
+Workflow chỉ dùng quyền ghi nội dung của chính repo để tạo Release;
+không cần thêm token cá nhân vào mã nguồn hay ứng dụng.
+
+### Thực hiện thủ công
+
 1. Đổi `VERSION` trong `fco/__init__.py`, ví dụ `4.2.1`. Luôn tăng phiên bản
    theo dạng `major.minor.patch`; không ghi đè bản cũ với cùng số phiên bản.
 2. Chạy `build.bat`. Chỉ dùng file sau khi build và tự kiểm tra thành công.
@@ -55,6 +69,13 @@ khi đã xác nhận bản mới hoạt động tốt và không có cập nhậ
 
 Chạy bộ kiểm thử và build có tự kiểm tra OCR/giao diện. Trước khi công bố
 Release, xác nhận hai file EXE và `SHA256SUMS.txt` đúng cùng một bản build.
+Chạy `.venv\Scripts\python.exe scripts\verify_updater.py release\FCO-Market-4.2.1.exe`
+để kiểm tra thực tế bộ cập nhật đóng gói: cập nhật thành công, từ chối file sai
+checksum và khôi phục sau lỗi khởi chạy. Phép kiểm tra dùng thư mục tạm trong
+`reports/`, giữ nguyên dữ liệu thật, không kết nối mạng.
+
+Từ 4.2.1, bộ cập nhật còn thử khởi chạy EXE vừa tải bằng chế độ kiểm tra ẩn,
+kiểm tra phiên bản bên trong và tài nguyên giao diện trước khi cho cài.
 
 Để kiểm tra trực tiếp qua GitHub, cài một bản có bộ cập nhật, phát hành bản
 cao hơn kèm đủ hai file, rồi thử tải/khởi động lại trong ứng dụng. Đường này

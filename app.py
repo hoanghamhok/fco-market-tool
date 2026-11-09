@@ -17,6 +17,13 @@ if __name__ == "__main__":
         from fco.updater import run_helper
 
         sys.exit(run_helper())
+    if "--update-probe" in sys.argv:
+        from fco.updater import run_probe
+
+        index = sys.argv.index("--update-probe")
+        if len(sys.argv) != index + 2:
+            sys.exit(1)
+        sys.exit(run_probe(Path(sys.argv[index + 1])))
     from fco.desktop import enable_dpi_awareness
 
     enable_dpi_awareness()

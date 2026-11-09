@@ -19,6 +19,7 @@ let api,
   page = 'salary',
   busy = false,
   revision = -1,
+  renderedUpdateStatus = '',
   taxRequest = 0,
   undo = null;
 let writeQueue = Promise.resolve();
@@ -93,11 +94,16 @@ async function applyUpdate() {
     } else if (updateState.status === 'downloaded') {
       $('apply-update').disabled = true;
       await writeQueue;
+      renderUpdate({
+        ...updateState,
+        status: 'preparing',
+        message: 'Đang chuẩn bị cập nhật. Vui lòng chờ…',
+      });
       renderUpdate(await api.install_update());
       await api.restart_for_update();
     }
   } catch (e) {
-    renderUpdate({ status: 'error', message: String(e?.message || e) });
+    error(e);
   }
 }
 function error(message) {
@@ -284,8 +290,9 @@ function watchSettings() {
 function renderState(state) {
   busy = state.busy;
   renderUpdate(state.update);
-  if (state.revision === revision) return;
+  if (state.revision === revision && renderedUpdateStatus === updateState.status) return;
   revision = state.revision;
+  renderedUpdateStatus = updateState.status;
   busy = state.busy;
   $('watch-status').textContent = state.status;
   $('watch-dot').classList.toggle('running', busy);
@@ -474,7 +481,7 @@ async function init() {
     renderState(data.state);
     $('loading').hidden = true;
     document.documentElement.dataset.ready = 'true';
-    if (data.auto_check_updates) checkUpdate(true);
+    if (data.auto_check_updates && data.state.update.status !== 'error') checkUpdate(true);
     const poll = async () => {
       try {
         renderState(await api.get_state());
