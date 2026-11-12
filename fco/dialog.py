@@ -183,12 +183,18 @@ class DialogReader:
                     raise RecognitionError(field_name or key, crop, str(error)) from error
             return self.cache[signature]
 
-        title = cached(
-            "title", box.region(COMMON["title"]), lambda crop: normalize(self.ocr.text(crop))
-        )
-        side = "buy" if "mua" in title else "sell" if "ban" in title else None
-        if side is None:
-            raise ValueError("Không xác định được hộp Mua/Bán")
+        if bound is None:
+            title = cached(
+                "title", box.region(COMMON["title"]), lambda crop: normalize(self.ocr.text(crop))
+            )
+            side = "buy" if "mua" in title else "sell" if "ban" in title else None
+            if side is None:
+                raise ValueError("Không xác định được hộp Mua/Bán")
+        else:
+            # Detection already established the dialog type. During refresh the
+            # title can be blurred mid-animation, while the selected tab and
+            # player/card fields below still verify the binding on every frame.
+            side = bound.side
         fields = PROFILES[side] | COMMON
 
         def field(key, method):

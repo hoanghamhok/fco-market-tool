@@ -1,4 +1,9 @@
-# FCO Market 4.2.4
+# FCO Market 4.2.5
+
+## Thay đổi 4.2.5
+
+- Sửa lỗi dừng sau vài vòng trên máy khác khi tiêu đề hộp Mua/Bán bị OCR mờ lúc game vẽ lại. Sau lần nhận diện đầu, các vòng canh dùng loại hộp đã khóa và tiếp tục kiểm tra tab đang chọn, tên, mức cộng, ảnh thẻ, số lượng và MIN/MAX trước khi Esc hoặc mở lại.
+- Thêm kiểm thử ảnh hộp có tiêu đề bị che: nhận diện ban đầu vẫn từ chối, còn vòng đã khóa đúng cầu thủ tiếp tục đọc được mà không bỏ các điều kiện xác minh còn lại.
 
 ## Thay đổi 4.2.4
 

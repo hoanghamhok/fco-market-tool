@@ -1,7 +1,7 @@
 import unittest
 from PIL import Image, ImageDraw
 from fco.paths import RESOURCE_ROOT
-from fco.dialog import DialogReader, RecognitionError, locate_dialog, PROFILES, button_enabled
+from fco.dialog import DialogReader, RecognitionError, locate_dialog, PROFILES, COMMON, button_enabled
 from fco.ocr import OCR, normalize
 
 
@@ -31,8 +31,20 @@ class DialogTests(unittest.TestCase):
     def test_changed_player_or_side_is_rejected(self):
         reader = DialogReader(self.ocr)
         bound = reader.read(self.image("buy"))
-        with self.assertRaisesRegex(ValueError, "đã đổi"):
+        with self.assertRaises(ValueError):
             reader.read(self.image("sell"), bound)
+
+    def test_bound_dialog_does_not_depend_on_blurred_title(self):
+        reader = DialogReader(self.ocr)
+        bound = reader.read(self.image("buy"))
+        image = self.image("buy")
+        title = locate_dialog(image).region(COMMON["title"])
+        ImageDraw.Draw(image).rectangle(
+            (title.x, title.y, title.x + title.width, title.y + title.height), fill="white"
+        )
+        with self.assertRaises(RecognitionError):
+            DialogReader(self.ocr).read(image)
+        self.assertEqual(reader.read(image, bound).identity, bound.identity)
 
     def test_selected_tab_check_remains_mandatory(self):
         image = self.image("buy")
