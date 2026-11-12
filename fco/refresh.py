@@ -96,7 +96,9 @@ class ParentReader:
                 round(image.width * 0.014),
                 round(image.height * 0.016),
             )
-            boost = self._read("boost", badge.crop(image), lambda crop: self.ocr.number(crop, 50))
+            boost = self._read(
+                "boost", badge.crop(image), lambda crop: self.ocr.number(crop, 50, badge=True)
+            )
             if boost != bound.boost:
                 continue
             status = Box(
@@ -172,7 +174,19 @@ class Refresher:
             self.parent.root(frame.image)
             closed = False
         else:
-            io.scan(reader, bound)
+            # The first frame after reopening can still contain partially drawn
+            # text. Do not dismiss the modal until its identity is verified.
+            last = None
+            for delay in (0, *readiness_delays(0.48)):
+                if delay:
+                    io.wait(delay)
+                try:
+                    io.scan(reader, bound)
+                    break
+                except ValueError as error:
+                    last = error
+            else:
+                raise ValueError("Hộp chưa đọc rõ trước khi đóng: " + str(last))
             self.step("Bấm Esc để đóng hộp")
             io.escape()
             for delay in readiness_delays(0.96):
@@ -211,7 +225,20 @@ class Refresher:
         else:
             raise ValueError("Bảng TTCN chưa sẵn sàng sau khi đọc lại: " + str(last))
         if route == "orders":
-            entry = self.parent.find_entry(frame.image, bound)
+            # The row can paint later than the tab. Retry on fresh frames;
+            # never hover or click until the exact row has been verified.
+            last = None
+            for delay in (0, *readiness_delays(0.8)):
+                if delay:
+                    io.wait(delay)
+                    frame = io.capture()
+                try:
+                    entry = self.parent.find_entry(frame.image, bound)
+                    break
+                except ValueError as error:
+                    last = error
+            else:
+                raise ValueError("Chưa đọc rõ đúng dòng cầu thủ: " + str(last))
             io.move_point(frame, round(frame.image.width * 0.64), entry.row_y)
             last = None
             for delay in readiness_delays(0.96):
@@ -245,7 +272,6 @@ class Refresher:
                 return reopened
             except ValueError as error:
                 last = error
-                # If a dialog opened with another card/type, never interact with it.
-                if "đã đổi" in str(error):
-                    raise
+                # A partially painted card can briefly look different. Keep
+                # reading without input; a persistent mismatch still stops.
         raise RuntimeError("Chưa mở lại đúng hộp sau khi làm mới: " + str(last))

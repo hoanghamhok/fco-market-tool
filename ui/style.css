@@ -1015,6 +1015,75 @@ input:focus {
 .conditions > .section-heading {
   margin-bottom: 17px;
 }
+.limit-input input {
+  font-family: 'Bahnschrift', var(--font);
+  font-size: 20px;
+  font-weight: 550;
+  letter-spacing: 0.3px;
+  font-variant-numeric: tabular-nums;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.limit-input input::placeholder {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.limit-examples {
+  margin-top: 11px;
+  padding: 11px;
+  border: 1px solid #35432f;
+  border-radius: 6px;
+  background: #171e16;
+}
+.limit-examples-title {
+  display: block;
+  margin-bottom: 8px;
+  color: #8fa780;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 1px;
+}
+.limit-example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(102px, 1fr));
+  gap: 6px;
+}
+.limit-example-grid button {
+  min-width: 0;
+  padding: 8px 7px 7px;
+  text-align: left;
+  border: 1px solid #3c4b35;
+  border-radius: 4px;
+  background: #202a1e;
+}
+.limit-example-grid button span,
+.limit-example-grid button strong {
+  display: block;
+  white-space: nowrap;
+}
+.limit-example-grid button span {
+  color: #91a388;
+  font-size: 9px;
+  letter-spacing: 0.3px;
+}
+.limit-example-grid button strong {
+  margin-top: 2px;
+  color: #e1e9d8;
+  font-family: 'Bahnschrift', var(--font);
+  font-size: 11px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+.limit-example-grid button.selected {
+  border-color: #a6d873;
+  background: #30442a;
+}
+.limit-example-grid button.selected span,
+.limit-example-grid button.selected strong {
+  color: var(--green);
+}
 .time-fields {
   display: grid;
   grid-template-columns: 1.25fr 1fr;

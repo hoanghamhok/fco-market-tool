@@ -204,7 +204,7 @@ class DialogReader:
         name = field("name", lambda crop: self.ocr.text(crop, 0))
         if len(normalize(name)) < 3:
             raise ValueError("Không đọc rõ tên cầu thủ")
-        boost = field("boost", lambda crop: self.ocr.number(crop, 50))
+        boost = field("boost", lambda crop: self.ocr.number(crop, 50, badge=True))
         if not 1 <= boost <= 13:
             raise ValueError("Không đọc rõ mức cộng của thẻ")
         quote = Quote(field("floor", self.ocr.label), field("ceiling", self.ocr.label))

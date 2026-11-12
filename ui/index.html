@@ -282,10 +282,34 @@
               <h2>Điều kiện canh giá</h2>
             </div>
             <label class="field-label" id="limit-label" for="watch-limit">Ngưỡng giá</label>
-            <div class="input-unit">
-              <input id="watch-limit" inputmode="numeric" placeholder="Nhập số BP đầy đủ" /><span
-                >BP</span
-              >
+            <div class="input-unit limit-input">
+              <input
+                id="watch-limit"
+                inputmode="numeric"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Ví dụ: 1.000.000.000"
+              /><span>BP</span>
+            </div>
+            <div class="limit-examples">
+              <span class="limit-examples-title">MỐC GIÁ · CHỌN NHANH</span>
+              <div class="limit-example-grid">
+                <button type="button" data-limit-value="1000000">
+                  <span>1 TRIỆU</span><strong>1.000.000</strong>
+                </button>
+                <button type="button" data-limit-value="10000000">
+                  <span>10 TRIỆU</span><strong>10.000.000</strong>
+                </button>
+                <button type="button" data-limit-value="100000000">
+                  <span>100 TRIỆU</span><strong>100.000.000</strong>
+                </button>
+                <button type="button" data-limit-value="1000000000">
+                  <span>1 TỶ</span><strong>1.000.000.000</strong>
+                </button>
+                <button type="button" data-limit-value="10000000000">
+                  <span>10 TỶ</span><strong>10.000.000.000</strong>
+                </button>
+              </div>
             </div>
             <button class="text-button small" id="use-price" disabled>
               Dùng giá MIN / MAX đã nhận diện

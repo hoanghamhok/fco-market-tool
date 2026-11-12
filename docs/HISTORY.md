@@ -1,4 +1,21 @@
-# FCO Market 4.0.0
+# FCO Market 4.2.4
+
+## Thay đổi 4.2.4
+
+- Ô giá mua tối đa / giá bán tối thiểu tự thêm dấu chấm phân tách hàng nghìn ngay khi nhập và giữ vị trí con trỏ.
+- Thêm năm mốc chọn nhanh: 1 triệu, 10 triệu, 100 triệu, 1 tỷ và 10 tỷ BP; chọn mốc sẽ điền và lưu số BP đầy đủ.
+- Tự kiểm tra giao diện WebView2 xác nhận định dạng, lưu giá, trạng thái nút và bố cục ở hai kích thước cửa sổ.
+
+## Thay đổi 4.2.3
+
+- Dùng ảnh chẩn đoán lỗi thật của huy hiệu +4 nền cam để sửa OCR: tách phần nét số tối khỏi nền màu và viền trước khi đọc. Ảnh lỗi nay nhận đúng +4 ở ba tỷ lệ; thử thêm +1, +2, +3 trên nền màu tương tự.
+- Giữ các bước đọc lại ngắn khi hộp hoặc dòng lệnh đang vẽ dở như bản 4.2.2.
+
+## Thay đổi 4.2.2
+
+- Ưu tiên tách chữ số khỏi viền và mũi tên khi đọc mức cộng; thử nhận dạng chỉ chữ số nếu lượt đầu chưa rõ. Cải thiện trường hợp thẻ mức cộng thấp và giảm lượt OCR lặp trên vùng đã rõ.
+- Khi hộp hoặc dòng lệnh vừa vẽ lại, thử đọc thêm từ ảnh mới trong thời gian ngắn trước khi kết luận lỗi. Không bấm Esc, rê chuột hay mở lại khi chưa xác minh đúng cầu thủ; ảnh sai thẻ kéo dài vẫn dừng.
+- Kiểm thử hồi quy cho lỗi OCR thoáng qua trước Esc, dòng lệnh hiện chậm, thẻ vẽ dở sau mở lại và trường hợp sai thẻ kéo dài.
 
 ## Thay đổi 4.0.0 — Giao diện desktop mới
 

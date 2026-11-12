@@ -53,7 +53,13 @@ def run_web_self_test(root, snapshot=None):
                 set('tax-price','7.600.000.000.000');await writeQueue;
                 click('[data-page="watch"]');
                 assert(!document.getElementById('watch-dry').disabled && document.getElementById('watch-dry').checked,'dry run default');
-                set('watch-limit','800.000.000');set('watch-duration','180');await writeQueue;
+                set('watch-limit','1234567890');
+                assert(document.getElementById('watch-limit').value==='1.234.567.890','live BP grouping');
+                click('[data-limit-value="10000000000"]');
+                assert(document.getElementById('watch-limit').value==='10.000.000.000','quick value');
+                assert(document.querySelector('[data-limit-value="10000000000"]').getAttribute('aria-pressed')==='true','quick value selected');
+                set('watch-limit','800000000');set('watch-duration','180');await writeQueue;
+                assert((await api.bootstrap()).watch.limit==='800.000.000','grouped BP persisted');
                 click('[data-page="salary"]');await writeQueue;
                 const oldEnabled=data.updates_enabled,oldInstall=data.update_install_supported;
                 data.updates_enabled=true;data.update_install_supported=true;
@@ -92,9 +98,11 @@ def run_web_self_test(root, snapshot=None):
                         renderUpdate({status:'available',version:'99.0.0',notes:'Nội dung bản mới để kiểm tra bố cục.'});
                         const main=document.querySelector('main');
                         return {overflow:main.scrollWidth>main.clientWidth+1,
-                            page:document.documentElement.scrollWidth>innerWidth+1};
+                            page:document.documentElement.scrollWidth>innerWidth+1,
+                            samples:[...document.querySelectorAll('.limit-example-grid button')]
+                                .some(button=>button.scrollWidth>button.clientWidth+1)};
                     })()""" % page)
-                    assert not bounds["overflow"] and not bounds["page"], (
+                    assert not bounds["overflow"] and not bounds["page"] and not bounds["samples"], (
                         width,
                         height,
                         page,
@@ -108,6 +116,9 @@ def run_web_self_test(root, snapshot=None):
             window.evaluate_js("renderState(" + json.dumps(api.get_state()) + ")")
             assert window.evaluate_js(
                 "document.getElementById('start-watch').disabled && document.querySelector('[data-page=salary]').disabled"
+            )
+            assert window.evaluate_js(
+                "[...document.querySelectorAll('[data-limit-value]')].every(button=>button.disabled)"
             )
             api._set(busy=False)
             result["engine"] = "WebView2"

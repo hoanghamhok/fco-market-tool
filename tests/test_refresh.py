@@ -276,14 +276,62 @@ class RefreshFlowTests(unittest.TestCase):
                 refresh.cycle(io, object(), object())
         self.assertEqual(events, ["esc"])
 
-    def test_wrong_card_after_reopen_stops_immediately(self):
+    def test_wrong_card_after_reopen_stops_without_another_input(self):
         io, events, scans = self.io(ValueError("Thẻ đã đổi"))
         refresh = Refresher(self.parent(False))
         with patch("fco.refresh.locate_dialog", side_effect=self.locate):
             with self.assertRaisesRegex(RuntimeError, "đã đổi"):
                 refresh.cycle(io, object(), object())
         self.assertEqual(events, ["esc", "reopen"])
-        self.assertEqual(scans[0], 2)
+        self.assertGreater(scans[0], 2)
+
+    def test_transient_modal_read_recovers_before_esc(self):
+        io, events, scans = self.io()
+        scan = io.scan
+
+        def transient(*args):
+            if scans[0] == 0:
+                scans[0] += 1
+                raise ValueError("OCR chưa đọc rõ")
+            return scan(*args)
+
+        io.scan = transient
+        with patch("fco.refresh.locate_dialog", side_effect=self.locate):
+            Refresher(self.parent()).cycle(io, object(), object())
+        self.assertEqual(events, ["esc", "hover", "reopen"])
+
+    def test_partial_card_after_reopen_recovers_without_more_input(self):
+        io, events, scans = self.io()
+        scan = io.scan
+
+        def partial(*args):
+            if scans[0] == 1:
+                scans[0] += 1
+                raise ValueError("Cầu thủ hoặc mức cộng đã đổi")
+            return scan(*args)
+
+        io.scan = partial
+        with patch("fco.refresh.locate_dialog", side_effect=self.locate):
+            Refresher(self.parent()).cycle(io, object(), object())
+        self.assertEqual(events, ["esc", "hover", "reopen"])
+        self.assertEqual(scans[0], 3)
+
+    def test_row_paints_after_tab_without_clicking_unverified_row(self):
+        io, events, _ = self.io()
+        parent = self.parent()
+        reads = [0]
+
+        def delayed(*args):
+            reads[0] += 1
+            if reads[0] < 3:
+                raise ValueError("Dòng chưa vẽ xong")
+            return Entry(278, 6)
+
+        parent.find_entry = delayed
+        with patch("fco.refresh.locate_dialog", side_effect=self.locate):
+            Refresher(parent).cycle(io, object(), object())
+        self.assertEqual(reads[0], 3)
+        self.assertEqual(events, ["esc", "hover", "reopen"])
 
     def test_resume_from_parent_opens_without_blind_esc(self):
         io, events, scans = self.io(begin="parent")

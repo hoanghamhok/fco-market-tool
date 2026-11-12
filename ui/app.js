@@ -312,6 +312,11 @@ function renderState(state) {
   ])
     $(id).disabled =
       busy || ['downloading', 'preparing', 'installing'].includes(updateState.status);
+  all('[data-limit-value]').forEach(
+    (button) =>
+      (button.disabled =
+        busy || ['downloading', 'preparing', 'installing'].includes(updateState.status))
+  );
   const shot = state.snapshot;
   for (const id of ['start-watch', 'test-price', 'use-price'])
     $(id).disabled =
@@ -365,6 +370,38 @@ function formatPrice(id) {
     $(id).value = BigInt(value)
       .toString()
       .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+function renderLimitExamples() {
+  const value = $('watch-limit').value;
+  all('[data-limit-value]').forEach((button) => {
+    const selected = value === button.dataset.limitValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    button.classList.toggle('selected', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
+}
+function formatWatchLimit() {
+  const input = $('watch-limit');
+  const value = input.value;
+  if (/^[0-9.\s]*$/.test(value)) {
+    const countDigits = (text) => (text.match(/\d/g) || []).length;
+    const startDigits = countDigits(value.slice(0, input.selectionStart ?? value.length));
+    const endDigits = countDigits(value.slice(0, input.selectionEnd ?? value.length));
+    const digits = value.replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+    const formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    if (value !== formatted) {
+      input.value = formatted;
+      const position = (count) => {
+        if (!count) return 0;
+        let seen = 0;
+        for (let index = 0; index < formatted.length; index++) {
+          if (/\d/.test(formatted[index]) && ++seen === count) return index + 1;
+        }
+        return formatted.length;
+      };
+      input.setSelectionRange(position(startDigits), position(endDigits));
+    }
+  }
+  renderLimitExamples();
 }
 async function init() {
   if (api) return;
@@ -430,11 +467,32 @@ async function init() {
     $('tax-price').addEventListener('blur', () => formatPrice('tax-price'));
     $('tax-pc').addEventListener('change', () => updateTax());
     $('watch-limit').value = data.watch.limit;
+    formatWatchLimit();
     $('watch-dry').checked = data.watch.dry_run;
     $('watch-refresh').checked = data.watch.refresh_enabled;
     $('watch-start').value = data.watch.reset_start;
     $('watch-duration').value = data.watch.reset_duration;
-    $('watch-limit').addEventListener('blur', () => formatPrice('watch-limit'));
+    $('watch-limit').addEventListener('input', formatWatchLimit);
+    $('watch-limit').addEventListener('keydown', (event) => {
+      const input = event.currentTarget;
+      const cursor = input.selectionStart;
+      if (
+        event.key === 'Backspace' &&
+        cursor === input.selectionEnd &&
+        cursor > 1 &&
+        input.value[cursor - 1] === '.'
+      ) {
+        event.preventDefault();
+        input.setRangeText('', cursor - 2, cursor, 'end');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+    all('[data-limit-value]').forEach((button) =>
+      button.addEventListener('click', () => {
+        $('watch-limit').value = button.dataset.limitValue;
+        $('watch-limit').dispatchEvent(new Event('input', { bubbles: true }));
+      })
+    );
     $('watch-dry').addEventListener('change', () => {
       $('dry-description').textContent = $('watch-dry').checked
         ? 'Làm mới bảng, không gửi lệnh'
@@ -445,6 +503,7 @@ async function init() {
       $(id).addEventListener('input', () => persist('save_watch', watchSettings()));
     $('use-price').addEventListener('click', () => {
       $('watch-limit').value = data.state.snapshot.target;
+      formatWatchLimit();
       persist('save_watch', watchSettings());
     });
     $('detect').addEventListener('click', () => action('detect'));

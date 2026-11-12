@@ -93,6 +93,18 @@ class DialogTests(unittest.TestCase):
         self.assertEqual((snapshot.side, snapshot.boost, snapshot.price), ("buy", 6, 16400000000))
         self.assertEqual(snapshot.error, "Không đủ BP")
 
+    def test_orange_plus_four_badge_from_failed_diagnostic(self):
+        image = Image.open(
+            RESOURCE_ROOT / "assets/fixtures/sample-boost-orange-4.png"
+        ).convert("RGB")
+        for scale in [0.85, 1, 1.15]:
+            with self.subTest(scale=scale):
+                resized = image.resize(
+                    (round(image.width * scale), round(image.height * scale)),
+                    Image.Resampling.LANCZOS,
+                )
+                self.assertEqual(self.ocr.number(resized, 50, badge=True), 4)
+
     def test_regression_dialogs_at_three_image_scales(self):
         for fixture in ["buy", "sell", "buy-nedved"]:
             original = Image.open(
