@@ -30,6 +30,20 @@ class ScheduleTests(unittest.TestCase):
         self.assertEqual(immediate.start, now)
         self.assertEqual(immediate.end - now, timedelta(seconds=30))
 
+    def test_unlimited_window_runs_until_stopped(self):
+        now = datetime(2026, 10, 26, 20, 0, tzinfo=VN)
+        immediate = ResetWindow.create("", None, now)
+        self.assertIsNone(immediate.end)
+        self.assertEqual(immediate.state(now + timedelta(days=30)), "active")
+        delayed = immediate.after_setup(True, now + timedelta(seconds=4))
+        self.assertEqual(delayed.start, now + timedelta(seconds=4))
+        self.assertIsNone(delayed.end)
+        scheduled = ResetWindow.create("19:00", None, now)
+        self.assertEqual(scheduled.start.day, 27)
+        self.assertEqual(scheduled.state(now), "waiting")
+        self.assertEqual(scheduled.state(scheduled.start), "active")
+        self.assertIn("không giới hạn", scheduled.label)
+
     def test_reject_invalid_settings(self):
         for text, seconds in [("25:01", 120), ("abc", 120), ("", 0), ("", 1801), ("", True)]:
             with self.subTest(text=text, seconds=seconds):

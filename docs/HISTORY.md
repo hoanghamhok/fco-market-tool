@@ -1,4 +1,10 @@
-# FCO Market 4.2.6
+# FCO Market 4.2.7
+
+## Thay đổi 4.2.7
+
+- Thêm tùy chọn **Không giới hạn** cho thời gian canh. Phiên tiếp tục chạy sau giờ bắt đầu cho đến khi người dùng dừng bằng nút Dừng hoặc F8, hoặc khi phiên gửi lệnh xong.
+- Ghi đường dẫn EXE đã cập nhật vào `FCO-Market-3-data/updates/result.json` để kiểm tra chính xác file được thay thế khi icon hoặc shortcut không mở lại được.
+- Bản build trong Downloads tạo thêm `FCO-Market.exe` với đường dẫn cố định; có thể trỏ shortcut vào file này để các lần build sau không làm hỏng icon.
 
 ## Thay đổi 4.2.6
 
@@ -95,7 +101,7 @@ Source cố định: `C:\Users\dkfbr\Downloads\fco-market-tool`. Sửa tại đ�
 2. Mở đúng hộp **Mua thường** hoặc **Bán từng cá nhân**, số lượng **1**. Khi đăng ký lại lệnh, mở từ nút **Đăng ký lại** trong **DS của bạn**. Giữ dòng cầu thủ nằm trong vùng danh sách đang thấy.
 3. Bấm **Nhận diện · 4 giây**, chuyển lại game nếu cần. Kiểm tra ảnh thẻ, tên, mức cộng và MIN/MAX trên tool.
 4. Nhập **giá mua tối đa** hoặc **giá bán tối thiểu** bằng số BP đầy đủ.
-5. Nhập giờ bắt đầu dạng `HH:MM` hoặc `HH:MM:SS`, ví dụ `20:01:00`; để trống để bắt đầu ngay. Nhập thời gian canh từ **5–1.800 giây**, mặc định **120 giây**. Giờ dùng UTC+7. Nếu giờ đã qua và khung đó đã hết, lịch chuyển sang ngày hôm sau; trạng thái hiển thị cả ngày chạy.
+5. Nhập giờ bắt đầu dạng `HH:MM` hoặc `HH:MM:SS`, ví dụ `20:01:00`; để trống để bắt đầu ngay. Nhập thời gian canh từ **5–1.800 giây**, mặc định **120 giây**, hoặc chọn **Không giới hạn** để canh đến khi dừng. Giờ dùng UTC+7. Nếu giờ đã qua, lịch chuyển sang ngày hôm sau; trạng thái hiển thị cả ngày chạy.
 6. Sau Nhận diện, có thể giữ hộp mở hoặc trở về bảng TTCN phía sau. Bật **Esc → mở lại bảng để lấy giá mới**, bấm **Canh reset**, giữ game ở phía trước. Tool chỉ đóng/mở trong khung giờ đã chọn. Giá đổi và đạt ngưỡng thì mua MAX / bán MIN; hết giờ thì dừng.
 
 Mặc định bật **Chạy thử**: có Esc và mở lại bảng, nhưng không chọn giá hoặc gửi lệnh. Bỏ chọn để thực hiện lệnh thật. Mỗi phiên tối đa một lần gửi. **F8**, nút Dừng hoặc chuyển sang cửa sổ khác sẽ dừng thao tác.

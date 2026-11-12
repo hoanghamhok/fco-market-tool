@@ -5,6 +5,7 @@ $downloads = [IO.Path]::GetFullPath((Join-Path $env:USERPROFILE 'Downloads'))
 $version = [regex]::Match((Get-Content -LiteralPath (Join-Path $root 'fco/__init__.py') -Raw), '\d+(?:\.\d+)+').Value
 if (!$version) { throw 'Cannot read application version.' }
 $name = "FCO-Market-$version.exe"
+$stableName = 'FCO-Market.exe'
 $stage = Join-Path $root '.build-staging'
 $release = Join-Path $root 'release'
 $python = Join-Path $root '.venv/Scripts/python.exe'
@@ -38,7 +39,7 @@ function Assert-Child([string]$base, [string]$target) {
 function Old-Executables([string]$folder) {
     if (Test-Path -LiteralPath $folder) {
         Get-ChildItem -LiteralPath $folder -File | Where-Object {
-            $_.Name -match '^FCO-Market(?:-\d+(?:\.\d+)*)?\.exe$' -and $_.Name -ne $name
+            $_.Name -match '^FCO-Market-\d+(?:\.\d+)*\.exe$' -and $_.Name -ne $name
         }
     }
 }
@@ -47,7 +48,10 @@ if ($Plan) {
     Write-Output "Source: $root"
     Write-Output "Build and verify: $name"
     if ($VerifyOnly) { Write-Output 'Verify only: no publication or removal of previous EXEs.' }
-    else { Write-Output "Publish: $release ; $downloads" }
+    else {
+        Write-Output "Publish: $release ; $downloads"
+        Write-Output "Stable shortcut target: $(Join-Path $downloads $stableName)"
+    }
     foreach ($folder in @($release,$downloads)) {
         if (!$VerifyOnly) { Old-Executables $folder | ForEach-Object { Write-Output "Remove after success: $($_.FullName)" } }
     }
@@ -95,20 +99,33 @@ try {
         Move-Item -LiteralPath $temporary -Destination $target -Force
         if ((Get-Sha256 $target) -ne $hash) { throw "Publication failed: $target" }
     }
+    $stableTarget = Join-Path $downloads $stableName
+    Assert-Child $downloads $stableTarget
+    $stableTemporary = $stableTarget + '.new'
+    Assert-Child $downloads $stableTemporary
+    Copy-Item -LiteralPath $artifact -Destination $stableTemporary -Force
+    Move-Item -LiteralPath $stableTemporary -Destination $stableTarget -Force
+    if ((Get-Sha256 $stableTarget) -ne $hash) { throw "Publication failed: $stableTarget" }
     Copy-Item -LiteralPath $reportPath -Destination (Join-Path $release 'self-test.json') -Force
     [IO.File]::WriteAllText((Join-Path $release 'SHA256SUMS.txt'), ($hash.ToLowerInvariant() + '  ' + $name + "`n"), [Text.UTF8Encoding]::new($false))
-    # Remove old executables only after both published copies match the verified EXE.
+    # Remove old executables only after all published copies match the verified EXE.
+    $oldFilesLeft = @()
     foreach ($folder in @($release,$downloads)) {
         foreach ($file in @(Old-Executables $folder)) {
             Assert-Child $folder $file.FullName
-            Remove-Item -LiteralPath $file.FullName -Force
+            try {
+                Remove-Item -LiteralPath $file.FullName -Force
+            } catch {
+                $oldFilesLeft += $file.FullName
+                Write-Warning "Could not remove old EXE: $($file.FullName). Close it and remove it later."
+            }
         }
     }
     foreach ($folder in @($stage,(Join-Path $root 'build'),(Join-Path $root '.pyinstaller-cache'))) {
         Assert-Child $root $folder
         if (Test-Path -LiteralPath $folder) { Remove-Item -LiteralPath $folder -Recurse -Force }
     }
-    Write-Output "Verified and published $name. Older FCO builds removed."
+    Write-Output "Verified and published $name. Old EXEs left: $($oldFilesLeft.Count)."
 } finally {
     $env:TEMP = $oldTemp; $env:TMP = $oldTmp; $env:PYINSTALLER_CONFIG_DIR = $oldCache
 }

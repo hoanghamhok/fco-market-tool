@@ -323,11 +323,16 @@
                 >
               </div>
               <div>
-                <label class="field-label" for="watch-duration">Thời gian canh</label>
+                <div class="duration-heading">
+                  <label class="field-label" for="watch-duration">Thời gian canh</label>
+                  <label class="duration-unlimited"
+                    ><input id="watch-unlimited" type="checkbox" />Không giới hạn</label
+                  >
+                </div>
                 <div class="input-unit">
                   <input id="watch-duration" inputmode="numeric" value="120" /><span>giây</span>
                 </div>
-                <span class="input-help">Từ 5 đến 1.800 giây</span>
+                <span class="input-help" id="duration-help">Từ 5 đến 1.800 giây</span>
               </div>
             </div>
             <label class="switch-row compact"

@@ -59,6 +59,12 @@ def run_web_self_test(root, snapshot=None):
                 assert(document.getElementById('watch-limit').value==='10.000.000.000','quick value');
                 assert(document.querySelector('[data-limit-value="10000000000"]').getAttribute('aria-pressed')==='true','quick value selected');
                 set('watch-limit','800000000');set('watch-duration','180');await writeQueue;
+                click('#watch-unlimited');await writeQueue;
+                assert(watchSettings().reset_duration==='unlimited','unlimited watch setting');
+                assert(document.getElementById('watch-duration').disabled,'duration input disabled when unlimited');
+                assert((await api.bootstrap()).watch.reset_duration==='unlimited','unlimited setting persisted');
+                click('#watch-unlimited');await writeQueue;
+                assert(watchSettings().reset_duration==='180','timed watch setting restored');
                 assert((await api.bootstrap()).watch.limit==='800.000.000','grouped BP persisted');
                 click('[data-page="salary"]');await writeQueue;
                 const oldEnabled=data.updates_enabled,oldInstall=data.update_install_supported;

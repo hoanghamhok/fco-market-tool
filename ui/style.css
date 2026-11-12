@@ -1090,6 +1090,28 @@ input:focus {
   gap: 12px;
   margin-top: 17px;
 }
+.duration-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+.duration-unlimited {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #a9c592;
+  font-size: 9px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.duration-unlimited input {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--green);
+}
 .input-help {
   display: block;
   font-size: 9px;

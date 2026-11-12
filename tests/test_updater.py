@@ -140,6 +140,8 @@ class UpdateTests(unittest.TestCase):
         self.assertEqual(target.read_bytes(), self.content)
         self.assertEqual((folder / "previous.exe").read_bytes(), b"MZold")
         self.assertEqual((data / "settings.json").read_text(), '{"salary":25}')
+        result = json.loads((data / "updates/result.json").read_text())
+        self.assertEqual(result["target"], str(target))
         launch.assert_called_once_with([str(target)], str(target.parent))
 
     def test_failed_restart_rolls_back_original_exe(self):
@@ -152,7 +154,9 @@ class UpdateTests(unittest.TestCase):
         ):
             self.assertEqual(updater.apply_job(folder, folder / "updater.exe"), 1)
         self.assertEqual(target.read_bytes(), b"MZold")
-        self.assertFalse(json.loads((data / "updates/result.json").read_text())["ok"])
+        result = json.loads((data / "updates/result.json").read_text())
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["target"], str(target))
         self.assertEqual(launch.call_count, 2)
 
     def test_corrupt_payload_and_cancel_never_replace_exe(self):

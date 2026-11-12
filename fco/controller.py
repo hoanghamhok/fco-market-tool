@@ -280,10 +280,14 @@ class DesktopAPI:
                 limit = parse_bp(settings.get("limit", ""))
                 if limit <= 0:
                     raise ValueError("Ngưỡng BP cần lớn hơn 0")
-                try:
-                    duration = int(settings.get("reset_duration", ""))
-                except ValueError:
-                    raise ValueError("Số giây canh cần là số nguyên từ 5 đến 1.800")
+                duration_text = str(settings.get("reset_duration", ""))
+                if duration_text == "unlimited":
+                    duration = None
+                else:
+                    try:
+                        duration = int(duration_text)
+                    except ValueError:
+                        raise ValueError("Số giây canh cần là số nguyên từ 5 đến 1.800")
                 reset_window = ResetWindow.create(settings.get("reset_start", ""), duration)
             atomic_json(
                 self._root / "settings.json",

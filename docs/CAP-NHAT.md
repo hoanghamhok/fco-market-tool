@@ -52,6 +52,11 @@ chạy, giữ nguyên tên/vị trí EXE để shortcut cũ tiếp tục hoạt 
 có thể vẫn là `FCO-Market-4.2.0.exe` sau khi cập nhật: phiên bản thực hiển thị
 trong ứng dụng. Mọi cài đặt và lịch sử vẫn nằm trong `FCO-Market-3-data` cạnh EXE.
 
+Khi build từ source trên máy này, `build.bat` còn tạo
+`Downloads/FCO-Market.exe` với tên cố định. Shortcut trên máy build nên trỏ vào
+file đó; mỗi lần build tiếp theo sẽ cập nhật file tại cùng đường dẫn. Bản tải
+từ GitHub vẫn có tên phiên bản và được updater thay ngay tại đường dẫn đã chạy.
+
 Không cập nhật trong thư mục chỉ đọc. Nếu có nhiều cửa sổ cùng chạy một EXE,
 đóng các cửa sổ còn lại trước khi khởi động lại để cập nhật.
 
@@ -62,7 +67,9 @@ file. Dữ liệu và hàng đợi lưu giao diện được giữ trong luồng
 Bản cũ được giữ tại `updates/<mã>/previous.exe`; nếu thay file hoặc mở tiến
 trình mới thất bại, bộ cập nhật cố khôi phục EXE cũ. Đây là khôi phục lỗi thay
 file/khởi chạy tiến trình, không phải tự phát hiện mọi lỗi nghiệp vụ của bản mới.
-Kết quả gần nhất nằm ở `updates/result.json`. Có thể xóa các thư mục mã cũ
+Kết quả gần nhất nằm ở `updates/result.json`; trường `target` cho biết chính xác
+EXE đã được thay. Nếu icon không mở lại, đối chiếu `target` với đường dẫn
+**Properties → Target** của shortcut. Có thể xóa các thư mục mã cũ
 khi đã xác nhận bản mới hoạt động tốt và không có cập nhật đang chạy.
 
 ## Kiểm tra trước khi phát hành

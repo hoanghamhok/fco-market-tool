@@ -57,6 +57,16 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(DesktopAPI(self.root).bootstrap()["watch"], settings)
         self.assertFalse(self.api.get_state()["busy"])
 
+    def test_unlimited_watch_setting_reaches_scheduler(self):
+        settings = self.api.bootstrap()["watch"]
+        settings.update(limit="800.000.000", reset_duration="unlimited")
+        self.api._bound = Mock()
+        with patch("fco.controller.Desktop"), patch("fco.controller.threading.Thread") as worker:
+            self.api.start_action("watch", settings)
+        window = worker.call_args.kwargs["args"][-1]
+        self.assertIsNone(window.end)
+        self.assertEqual(DesktopAPI(self.root).bootstrap()["watch"]["reset_duration"], "unlimited")
+
     def test_corrupt_files_fall_back_and_journal_still_blocks(self):
         for name in ("salary-settings.json", "settings.json", "tax-settings.json"):
             (self.root / name).write_text("{broken", encoding="utf-8")

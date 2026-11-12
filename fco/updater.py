@@ -401,7 +401,7 @@ def _apply_locked(folder, job, target, data):
         shutil.copy2(target, backup)
         replace_with_retry(payload, target)
         replaced = True
-        atomic_json(result_path, dict(ok=True, version=job["version"]))
+        atomic_json(result_path, dict(ok=True, version=job["version"], target=str(target)))
         detached([str(target)], str(target.parent))
         return 0
     except Exception as error:
@@ -409,7 +409,12 @@ def _apply_locked(folder, job, target, data):
             replace_with_retry(backup, target)
         atomic_json(
             result_path,
-            dict(ok=False, message=f"Cập nhật chưa hoàn tất: {error}", backup=str(backup)),
+            dict(
+                ok=False,
+                message=f"Cập nhật chưa hoàn tất: {error}",
+                target=str(target),
+                backup=str(backup),
+            ),
         )
         if exited:
             detached([str(target)], str(target.parent))

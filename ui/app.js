@@ -284,8 +284,16 @@ function watchSettings() {
     dry_run: $('watch-dry').checked,
     refresh_enabled: $('watch-refresh').checked,
     reset_start: $('watch-start').value,
-    reset_duration: $('watch-duration').value,
+    reset_duration: $('watch-unlimited').checked ? 'unlimited' : $('watch-duration').value,
   };
+}
+function renderDurationMode() {
+  const unlimited = $('watch-unlimited').checked;
+  $('watch-duration').disabled =
+    unlimited || busy || ['downloading', 'preparing', 'installing'].includes(updateState.status);
+  $('duration-help').textContent = unlimited
+    ? 'Canh đến khi dừng hoặc gửi 1 lệnh'
+    : 'Từ 5 đến 1.800 giây';
 }
 function renderState(state) {
   busy = state.busy;
@@ -306,12 +314,14 @@ function renderState(state) {
     'watch-limit',
     'watch-start',
     'watch-duration',
+    'watch-unlimited',
     'watch-refresh',
     'watch-dry',
     'acknowledge',
   ])
     $(id).disabled =
       busy || ['downloading', 'preparing', 'installing'].includes(updateState.status);
+  renderDurationMode();
   all('[data-limit-value]').forEach(
     (button) =>
       (button.disabled =
@@ -471,7 +481,9 @@ async function init() {
     $('watch-dry').checked = data.watch.dry_run;
     $('watch-refresh').checked = data.watch.refresh_enabled;
     $('watch-start').value = data.watch.reset_start;
-    $('watch-duration').value = data.watch.reset_duration;
+    $('watch-unlimited').checked = data.watch.reset_duration === 'unlimited';
+    $('watch-duration').value = $('watch-unlimited').checked ? '120' : data.watch.reset_duration;
+    renderDurationMode();
     $('watch-limit').addEventListener('input', formatWatchLimit);
     $('watch-limit').addEventListener('keydown', (event) => {
       const input = event.currentTarget;
@@ -499,7 +511,15 @@ async function init() {
         : 'Gửi lệnh thật khi giá đạt ngưỡng';
     });
     $('watch-dry').dispatchEvent(new Event('change'));
-    for (const id of ['watch-limit', 'watch-start', 'watch-duration', 'watch-refresh', 'watch-dry'])
+    $('watch-unlimited').addEventListener('change', renderDurationMode);
+    for (const id of [
+      'watch-limit',
+      'watch-start',
+      'watch-duration',
+      'watch-unlimited',
+      'watch-refresh',
+      'watch-dry',
+    ])
       $(id).addEventListener('input', () => persist('save_watch', watchSettings()));
     $('use-price').addEventListener('click', () => {
       $('watch-limit').value = data.state.snapshot.target;
