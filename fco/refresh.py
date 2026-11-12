@@ -126,7 +126,9 @@ class ParentReader:
             round(image.width * 0.038),
             round(image.height * 0.022),
         )
-        text = normalize(self._read("register", box.crop(image), self.ocr.vietnamese))
+        text = normalize(
+            self._read("register", box.crop(image), lambda crop: self.ocr.vietnamese(crop, 65))
+        )
         if text not in ("dangkylai", "dangkilai"):
             raise ValueError("Chưa nhận diện chắc nút Đăng ký lại; không bấm cạnh nút Hủy")
         return box.center

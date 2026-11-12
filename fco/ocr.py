@@ -133,6 +133,27 @@ class OCR:
 
     def number(self, image, minimum=80, badge=False):
         last = None
+        try:
+            isolated = isolate_line(image)
+        except ValueError:
+            isolated = None
+
+        def read(attempt, threshold, digits=False):
+            text = self.text(attempt, threshold, digits=digits)
+            match = re.fullmatch(r"[\W_]*([0-9]{1,2})[\W_]*", text.strip())
+            if not match:
+                raise ValueError("Không đọc rõ số lượng / mức cộng")
+            return int(match.group(1))
+
+        # The original glyphs are more faithful at small window sizes. Use
+        # the binary mask only if these readings cannot identify a number.
+        for attempt in (isolated, image):
+            if attempt is None:
+                continue
+            try:
+                return read(attempt, minimum)
+            except ValueError as error:
+                last = error
         if badge:
             # Card grades can use orange/colored backgrounds. A grayscale OCR
             # pass can mistake the background and border for a letter. Keep
@@ -157,27 +178,12 @@ class OCR:
                 isolated_mask = np.where(mask[top:bottom, left:right], 0, 255).astype("uint8")
                 glyph_image = ImageOps.expand(Image.fromarray(isolated_mask), border=5, fill=255)
                 try:
-                    text = self.text(glyph_image, max(minimum, 80))
-                    match = re.fullmatch(r"[\W_]*([0-9]{1,2})[\W_]*", text.strip())
-                    if match:
-                        return int(match.group(1))
+                    return read(glyph_image, max(minimum, 80))
                 except ValueError as error:
                     last = error
-        # Small boost badges often include a border or dropdown arrow. Reading
-        # only the glyphs first is both quicker and more reliable for one digit.
-        try:
-            isolated = isolate_line(image)
-        except ValueError:
-            isolated = None
-        for attempt, digits in ((isolated, False), (isolated, True), (image, False)):
-            if attempt is None:
-                continue
+        if isolated is not None:
             try:
-                text = self.text(attempt, minimum, digits=digits)
-                match = re.fullmatch(r"[\W_]*([0-9]{1,2})[\W_]*", text.strip())
-                if not match:
-                    raise ValueError("Không đọc rõ số lượng / mức cộng")
-                return int(match.group(1))
+                return read(isolated, minimum, digits=True)
             except ValueError as error:
                 last = error
         raise last

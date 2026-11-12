@@ -184,12 +184,21 @@ class DialogReader:
             return self.cache[signature]
 
         if bound is None:
-            title = cached(
-                "title", box.region(COMMON["title"]), lambda crop: normalize(self.ocr.text(crop))
-            )
-            side = "buy" if "mua" in title else "sell" if "ban" in title else None
-            if side is None:
-                raise ValueError("Không xác định được hộp Mua/Bán")
+            def read_title(crop):
+                last = ValueError("Không xác định được hộp Mua/Bán")
+                for read in (self.ocr.vietnamese, self.ocr.text):
+                    try:
+                        title = normalize(read(crop, 65))
+                    except ValueError as error:
+                        last = error
+                        continue
+                    if "mua" in title and "ban" not in title:
+                        return "buy"
+                    if "ban" in title and "mua" not in title:
+                        return "sell"
+                raise last
+
+            side = cached("title", box.region(COMMON["title"]), read_title)
         else:
             # Detection already established the dialog type. During refresh the
             # title can be blurred mid-animation, while the selected tab and
@@ -204,7 +213,7 @@ class DialogReader:
         if tab != ("muathuong" if side == "buy" else "bantungcanhan"):
             raise ValueError("Hãy chọn Mua thường hoặc Bán từng cá nhân")
         # Require the selected tab underline at the expected first-tab position.
-        line = box.region((0.069, 0.145, 0.214, 0.151)).crop(image).convert("L")
+        line = box.region((0.069, 0.143, 0.214, 0.155)).crop(image).convert("L")
         if np.mean(np.asarray(line) < 100) < 0.12:
             raise ValueError("Tab thường chưa được chọn")
         name = field("name", lambda crop: self.ocr.text(crop, 0))
@@ -214,7 +223,7 @@ class DialogReader:
         if not 1 <= boost <= 13:
             raise ValueError("Không đọc rõ mức cộng của thẻ")
         quote = Quote(field("floor", self.ocr.label), field("ceiling", self.ocr.label))
-        quantity = field("quantity", self.ocr.number)
+        quantity = field("quantity", lambda crop: self.ocr.number(crop, badge=True))
         card = image_signature(box.region(COMMON["card"]).crop(image))
         if bound is not None and (
             (side, normalize(name), boost) != bound.identity or not same_card(bound.card, card)

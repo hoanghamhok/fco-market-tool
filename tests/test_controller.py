@@ -78,6 +78,18 @@ class ControllerTests(unittest.TestCase):
         self.api._window.show.assert_called_once()
         self.assertIn("Đã nhận diện", self.api.get_state()["status"])
 
+    def test_detection_retries_a_partially_drawn_dialog_without_input(self):
+        controller = Mock()
+        shot = object()
+        controller.scan.side_effect = [ValueError("Tiêu đề chưa rõ"), shot]
+        with patch.object(self.api._stop, "wait", return_value=False), patch(
+            "fco.controller.OCR"
+        ), patch("fco.controller.DialogReader"), patch.object(self.api, "_snapshot") as snapshot:
+            self.api._run("detect", {}, controller, None, None, None)
+        snapshot.assert_called_once_with(shot)
+        self.assertEqual(controller.scan.call_count, 2)
+        controller.wait.assert_called_once()
+
     def test_only_confirmed_trade_brings_result_window_forward(self):
         settings = self.api.bootstrap()["watch"] | {"refresh_enabled": False}
         for result, expected in (("confirmed", 1), ("unverified", 0), ("preview", 0)):

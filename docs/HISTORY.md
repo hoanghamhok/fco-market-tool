@@ -1,4 +1,10 @@
-# FCO Market 4.2.5
+# FCO Market 4.2.6
+
+## Thay đổi 4.2.6
+
+- Khi nhận diện lần đầu, ưu tiên OCR tiếng Việt cho tiêu đề Mua/Bán và đọc lại ảnh mới trong thời gian ngắn nếu khung hình đang vẽ dở.
+- Ở cửa sổ game nhỏ, mở rộng vùng kiểm tra gạch chân tab vài pixel, ưu tiên nét số gốc trước ảnh nhị phân để tránh đọc nhầm mức cộng, và đọc nút Đăng ký lại với ngưỡng phù hợp cho chữ nhỏ nhưng vẫn yêu cầu đúng toàn bộ nhãn.
+- Kiểm thử ảnh ở 67%, 85%, 100%, 115% và 150% kích thước gốc; giữ kiểm tra đúng cầu thủ, mức cộng, số lượng, tab và giá BP đầy đủ.
 
 ## Thay đổi 4.2.5
 

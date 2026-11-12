@@ -21,6 +21,7 @@ from .pricing import parse_bp
 from .refresh import ParentReader, Refresher
 from .schedule import ResetWindow
 from .storage import FileLock, Journal, atomic_json
+from .timing import readiness_delays
 from .updater import Updater
 
 
@@ -326,7 +327,18 @@ class DesktopAPI:
                     atomic_json(self._root / "diagnostics/parent-tab.json", parent.last_report)
                     self._emit("status", "Đã lưu chẩn đoán nhận diện tab. Không gửi lệnh.")
                 elif action == "detect":
-                    self._snapshot(controller.scan(reader, exact=True))
+                    last = None
+                    for delay in (0, *readiness_delays(1.2)):
+                        if delay:
+                            controller.wait(delay)
+                        try:
+                            shot = controller.scan(reader, exact=True)
+                            break
+                        except ValueError as error:
+                            last = error
+                    else:
+                        raise last
+                    self._snapshot(shot)
                     self._emit(
                         "status", "Đã nhận diện. Kiểm tra cầu thủ và ngưỡng giá trước khi canh."
                     )

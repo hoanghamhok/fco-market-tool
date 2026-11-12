@@ -104,9 +104,9 @@ class ParentImageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parent.register_button(im, bound, entry)
 
-    def test_parent_controls_at_three_image_scales(self):
+    def test_parent_controls_across_window_scales(self):
         parent = ParentReader(self.ocr)
-        for scale in [0.85, 1, 1.15]:
+        for scale in [0.67, 0.85, 1, 1.15, 1.5]:
             with self.subTest(scale=scale):
                 im = self.image("orders-hover")
                 im = im.resize(

@@ -117,12 +117,12 @@ class DialogTests(unittest.TestCase):
                 )
                 self.assertEqual(self.ocr.number(resized, 50, badge=True), 4)
 
-    def test_regression_dialogs_at_three_image_scales(self):
+    def test_regression_dialogs_across_window_scales(self):
         for fixture in ["buy", "sell", "buy-nedved"]:
             original = Image.open(
                 RESOURCE_ROOT / "assets/fixtures" / f"sample-{fixture}.png"
             ).convert("RGB")
-            for scale in [0.85, 1, 1.15]:
+            for scale in [0.67, 0.85, 1, 1.15, 1.5]:
                 with self.subTest(fixture=fixture, scale=scale):
                     image = original.resize(
                         (round(original.width * scale), round(original.height * scale)),
@@ -160,9 +160,9 @@ class DialogTests(unittest.TestCase):
                 )
                 self.assertEqual(normalize(self.ocr.tab(image)), "muathuong")
 
-    def test_zambrotta_full_screenshot_at_three_scales(self):
+    def test_zambrotta_full_screenshot_across_window_scales(self):
         original = self.image("buy-zambrotta")
-        for scale in [0.85, 1, 1.15]:
+        for scale in [0.67, 0.85, 1, 1.15, 1.5]:
             with self.subTest(scale=scale):
                 image = original.resize(
                     (round(original.width * scale), round(original.height * scale)),
